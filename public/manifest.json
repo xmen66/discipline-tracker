@@ -1,0 +1,17 @@
+{
+  "name": "Smashfind Discipline System",
+  "short_name": "Smashfind",
+  "description": "The world's most advanced discipline tracking system.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#050505",
+  "theme_color": "#10b981",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3050/3050525.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
