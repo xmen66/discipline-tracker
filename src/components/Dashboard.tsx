@@ -36,8 +36,22 @@ interface Props {
 }
 
 import { DownloadModal } from './DownloadModal';
+import { useStepTracker } from '../hooks/useStepTracker';
 
 export const Dashboard: React.FC<Props> = ({ state, onStateUpdate, onSealPromise, showOnlyStats = false }) => {
+  const { steps: autoSteps, isTracking, startTracking, stopTracking } = useStepTracker(state.auth?.uid);
+
+  useEffect(() => {
+    if (autoSteps > state.steps) {
+      const newSteps = autoSteps;
+      const newCalories = Math.round(newSteps * 0.042);
+      onStateUpdate({
+        ...state,
+        steps: newSteps,
+        calories: newCalories
+      });
+    }
+  }, [autoSteps]);
   const [showPromiseModal, setShowPromiseModal] = useState(false);
   const [showDownloadBanner, setShowDownloadBanner] = useState(true);
   const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
@@ -95,12 +109,27 @@ export const Dashboard: React.FC<Props> = ({ state, onStateUpdate, onSealPromise
   }, [currentScore]);
 
   const toggleHabit = (id: string) => {
+    const habit = state.habits.find(h => h.id === id);
+    const newCompleted = !habit?.completed;
+    
     onStateUpdate({
       ...state,
       habits: state.habits.map(h => 
-        h.id === id ? { ...h, completed: !h.completed } : h
+        h.id === id ? { ...h, completed: newCompleted } : h
       )
     });
+
+    if (newCompleted && state.auth && habit) {
+      import('../lib/sync').then(({ broadcastProtocolEvent }) => {
+        broadcastProtocolEvent({
+          userId: state.auth!.uid,
+          userName: state.auth!.name,
+          userAvatar: state.auth!.avatar || '👤',
+          type: 'habit_completed',
+          content: `completed discipline: ${habit.name}`
+        });
+      });
+    }
   };
 
   const adjustWater = (amount: number) => {
@@ -305,24 +334,39 @@ export const Dashboard: React.FC<Props> = ({ state, onStateUpdate, onSealPromise
             </div>
 
             <div className="space-y-6">
-              <div>
-                <div className="flex justify-between items-end mb-2">
-                  <div className="flex items-center gap-2">
-                    <Footprints className="w-4 h-4 text-neutral-400" />
-                    <span className="text-xs font-bold text-neutral-500 uppercase tracking-widest">Movement Pattern</span>
+              <div className="flex flex-col gap-4">
+                <button 
+                  onClick={isTracking ? stopTracking : startTracking}
+                  style={{ 
+                    backgroundColor: isTracking ? 'transparent' : 'var(--accent-color)',
+                    borderColor: isTracking ? 'var(--accent-color)' : 'transparent',
+                    color: isTracking ? 'var(--accent-color)' : 'black'
+                  }}
+                  className="w-full py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest border transition-all active:scale-95 flex items-center justify-center gap-2"
+                >
+                  <Activity className={cn("w-4 h-4", isTracking && "animate-pulse")} />
+                  {isTracking ? 'TRACKING ACTIVE' : 'START MOMENTUM TRACKER'}
+                </button>
+
+                <div>
+                  <div className="flex justify-between items-end mb-2">
+                    <div className="flex items-center gap-2">
+                      <Footprints className="w-4 h-4 text-neutral-400" />
+                      <span className="text-xs font-bold text-neutral-500 uppercase tracking-widest">Movement Pattern</span>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-2xl font-black italic tracking-tighter">{state.steps.toLocaleString()}</span>
+                      <span className="text-[10px] font-bold text-neutral-500 ml-1">/ 10,000</span>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <span className="text-2xl font-black italic tracking-tighter">{state.steps.toLocaleString()}</span>
-                    <span className="text-[10px] font-bold text-neutral-500 ml-1">/ 10,000</span>
+                  <div className="h-3 bg-neutral-950 rounded-full overflow-hidden p-0.5 border border-neutral-800">
+                    <motion.div 
+                      initial={{ width: 0 }}
+                      animate={{ width: `${Math.min((state.steps / 10000) * 100, 100)}%` }}
+                      style={{ backgroundColor: 'var(--accent-color)' }}
+                      className="h-full rounded-full shadow-[0_0_15px_rgba(var(--accent-rgb),0.5)]"
+                    />
                   </div>
-                </div>
-                <div className="h-3 bg-neutral-950 rounded-full overflow-hidden p-0.5 border border-neutral-800">
-                  <motion.div 
-                    initial={{ width: 0 }}
-                    animate={{ width: `${Math.min((state.steps / 10000) * 100, 100)}%` }}
-                    style={{ backgroundColor: 'var(--accent-color)' }}
-                    className="h-full rounded-full shadow-[0_0_15px_rgba(var(--accent-rgb),0.5)]"
-                  />
                 </div>
               </div>
 

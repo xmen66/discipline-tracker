@@ -13,7 +13,9 @@ import { ALL_DISCIPLINES } from './data/disciplines';
 import { DisciplineEngine } from './utils/DisciplineEngine';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from './utils/cn';
+import { Zap } from 'lucide-react';
 import { subscribeToAuthChanges, logOut, handleSignInRedirect } from './lib/auth';
+import { saveUserDataToFirestore, loadUserDataFromFirestore, broadcastProtocolEvent } from './lib/sync';
 
 const DEFAULT_NOTIFICATIONS: NotificationSettings = {
   enabled: false,
@@ -35,26 +37,57 @@ export function App() {
     });
 
     // Firebase Auth State Listener
-    const unsubscribe = subscribeToAuthChanges((firebaseUser) => {
+    const unsubscribe = subscribeToAuthChanges(async (firebaseUser) => {
       if (firebaseUser) {
         const email = firebaseUser.email || '';
-        const saved = localStorage.getItem(`smash_user_data_${email}`);
+        const uid = firebaseUser.uid;
         
-        if (saved) {
+        // 1. Try to load from Firestore first for device sync
+        const remoteData = await loadUserDataFromFirestore(uid);
+        
+        // 2. Fallback to localStorage if no Firestore data
+        const savedLocal = localStorage.getItem(`smash_user_data_${email}`);
+        
+        if (remoteData) {
+          // Sync found - merge and use
+          const avatar = (remoteData as any).avatar || (remoteData as any).auth?.avatar || '👤';
+          setUserState({
+            ...remoteData as any,
+            auth: { 
+              uid, 
+              email, 
+              name: (remoteData as any).displayName || firebaseUser.displayName || (remoteData as any).auth?.name || email.split('@')[0],
+              avatar: avatar
+            }
+          });
+          
+          // Update local cache
+          localStorage.setItem(`smash_user_data_${email}`, JSON.stringify(remoteData));
+        } else if (savedLocal) {
           try {
-            const parsed = JSON.parse(saved);
-            // Ensure compatibility with latest version state
-            setUserState({
+            const parsed = JSON.parse(savedLocal);
+            const newState = {
               ...parsed,
-              auth: { email, name: firebaseUser.displayName || parsed.auth?.name || email.split('@')[0] }
-            });
+              auth: { uid, email, name: firebaseUser.displayName || parsed.auth?.name || email.split('@')[0] }
+            };
+            setUserState(newState);
+            // Migrate local to Firestore
+            await saveUserDataToFirestore(uid, newState);
           } catch (e) {
-            console.error("Failed to load state", e);
+            console.error("Failed to load local state", e);
           }
         } else {
           // Initialize new user
-          setUserState({
-            auth: { email, name: firebaseUser.displayName || email.split('@')[0] },
+          const newUserState: UserState = {
+            auth: { 
+              uid, 
+              email, 
+              name: firebaseUser.displayName || email.split('@')[0], 
+              avatar: '⚡',
+              level: 1,
+              xp: 0,
+              tier: 'Bronze'
+            },
             identity: [],
             habits: [],
             criticalPath: [],
@@ -70,11 +103,16 @@ export function App() {
             lastActive: new Date().toISOString(),
             isPro: true,
             score: 0,
+            level: 1,
+            xp: 0,
+            tier: 'Bronze',
             theme: 'dark',
             accentColor: '#10b981',
             dailyHistory: {},
             notificationSettings: DEFAULT_NOTIFICATIONS
-          });
+          };
+          setUserState(newUserState);
+          await saveUserDataToFirestore(uid, newUserState);
         }
       } else {
         setUserState(null);
@@ -124,9 +162,49 @@ export function App() {
   }, [userState?.notificationSettings]);
 
   const saveState = useCallback((newState: UserState) => {
-    setUserState(newState);
-    if (newState.auth?.email) {
-      localStorage.setItem(`smash_user_data_${newState.auth.email}`, JSON.stringify(newState));
+    const score = DisciplineEngine.calculateScore(newState);
+    
+    // Level & XP Logic
+    // XP is earned based on score and streak multiplier
+    // Only add XP if score > 0 and it's a new interaction (simplified for now to recalculate on changes)
+    // In a real app, you'd only add XP on "completions" or daily seals
+    // Here we'll simulate XP growth based on score
+    
+    let xp = newState.xp;
+    let level = newState.level;
+    let tier = newState.tier;
+    
+    // Dynamic Level Calculation
+    level = Math.floor(Math.sqrt(xp / 100)) + 1;
+    
+    const getTier = (l: number): UserState['tier'] => {
+      if (l >= 80) return 'Master';
+      if (l >= 60) return 'Ace';
+      if (l >= 40) return 'Platinum';
+      if (l >= 25) return 'Gold';
+      if (l >= 10) return 'Silver';
+      return 'Bronze';
+    };
+    
+    tier = getTier(level);
+
+    const finalState: UserState = { 
+      ...newState, 
+      score,
+      level,
+      tier,
+      auth: newState.auth ? {
+        ...newState.auth,
+        level,
+        tier,
+        xp
+      } : undefined
+    };
+    
+    setUserState(finalState);
+    if (finalState.auth?.email && finalState.auth?.uid) {
+      localStorage.setItem(`smash_user_data_${finalState.auth.email}`, JSON.stringify(finalState));
+      saveUserDataToFirestore(finalState.auth.uid, finalState);
     }
   }, []);
 
@@ -165,6 +243,16 @@ export function App() {
     };
 
     saveState(newState);
+    
+    if (newState.auth) {
+      broadcastProtocolEvent({
+        userId: newState.auth.uid,
+        userName: newState.auth.name,
+        userAvatar: newState.auth.avatar || '👤',
+        type: 'achievement',
+        content: `established a new identity protocol`
+      });
+    }
   };
 
   const handleLogout = async () => {
@@ -201,32 +289,69 @@ export function App() {
       promise
     };
 
+    const xpGain = Math.round(score * (1 + userState.streak * 0.1));
+
     updateState(prev => ({
       ...prev,
+      xp: prev.xp + xpGain,
       streak: score >= 80 ? prev.streak + 1 : 0,
       dailyHistory: {
         ...prev.dailyHistory,
         [dateKey]: entry
       },
     }));
+
+    if (userState.auth) {
+      broadcastProtocolEvent({
+        userId: userState.auth.uid,
+        userName: userState.auth.name,
+        userAvatar: userState.auth.avatar || '👤',
+        type: 'streak',
+        content: `sealed the Daily Promise Ritual (Score: ${score})`
+      });
+    }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#050505] flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-[var(--accent-color)] border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-[#050505] flex flex-col items-center justify-center relative overflow-hidden">
+        {/* Background glow */}
+        <div className="absolute inset-0 bg-emerald-500/5 blur-[120px] rounded-full scale-150 animate-pulse" />
+        
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="relative z-10 flex flex-col items-center"
+        >
+          <div className="w-20 h-20 bg-[#10b981] rounded-[2rem] flex items-center justify-center mb-8 shadow-[0_0_50px_rgba(16,185,129,0.3)] animate-bounce">
+            <Zap className="w-10 h-10 text-black" fill="currentColor" />
+          </div>
+          
+          <div className="text-center space-y-4">
+            <h1 className="text-4xl font-black italic tracking-tighter uppercase">SMASH FIND</h1>
+            <div className="flex flex-col items-center gap-2">
+              <div className="w-48 h-1 bg-neutral-900 rounded-full overflow-hidden">
+                <motion.div 
+                  initial={{ width: 0 }}
+                  animate={{ width: "100%" }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                  className="h-full bg-[#10b981]"
+                />
+              </div>
+              <p className="text-[#10b981] font-bold uppercase text-[10px] tracking-[0.4em] animate-pulse">Initializing Protocol</p>
+            </div>
+          </div>
+        </motion.div>
       </div>
     );
   }
 
   if (!userState) {
     return (
-      <div className="min-h-screen font-sans">
-        <Auth onAuth={() => {
-          // Firebase observer in useEffect will handle the state update automatically
-          // but we can set loading to true to show a transition if needed
-          setLoading(true);
-        }} />
+      <div className="min-h-screen font-sans bg-[#050505] flex items-center justify-center p-4">
+        <div className="w-full max-w-md">
+          <Auth onAuth={() => setLoading(true)} />
+        </div>
       </div>
     );
   }
@@ -250,7 +375,7 @@ export function App() {
       case 'vision':
         return <VisionBoard />;
       case 'leaderboard':
-        return <Leaderboard />;
+        return <Leaderboard currentUserId={userState.auth?.uid} />;
       case 'settings':
         return <Settings state={userState} onLogout={handleLogout} onDeleteData={handleDeleteData} onStateUpdate={saveState} />;
       default:
@@ -268,6 +393,7 @@ export function App() {
         onViewChange={setActiveView} 
         onDownloadClick={() => setIsDownloadOpen(true)}
         theme={userState.theme}
+        user={userState.auth}
       />
       
       <main className="flex-1 md:ml-64 p-4 md:p-12 overflow-x-hidden">
@@ -289,6 +415,7 @@ export function App() {
         onViewChange={setActiveView} 
         onDownloadClick={() => setIsDownloadOpen(true)}
         theme={userState.theme}
+        user={userState.auth}
       />
 
       <DownloadModal 

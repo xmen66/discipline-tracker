@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, Lock, User, ArrowRight, ShieldCheck, Zap } from 'lucide-react';
+import { Mail, Lock, User, ArrowRight, ShieldCheck, Zap, AlertCircle } from 'lucide-react';
 import { AuthData } from '../types';
 import { logIn, signUp, signInWithGoogle } from '../lib/auth';
 
@@ -14,12 +14,34 @@ export const Auth: React.FC<Props> = ({ onAuth }) => {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const validatePassword = (pass: string) => {
+    const minLength = pass.length >= 8;
+    const hasUpper = /[A-Z]/.test(pass);
+    const hasLower = /[a-z]/.test(pass);
+    const hasNumber = /[0-9]/.test(pass);
+    const hasSpecial = /[!@#$%^&*]/.test(pass);
+
+    if (!minLength) return "Password must be at least 8 characters long.";
+    if (!hasUpper) return "Password must include at least one uppercase letter.";
+    if (!hasLower) return "Password must include at least one lowercase letter.";
+    if (!hasNumber) return "Password must include at least one number.";
+    if (!hasSpecial) return "Password must include at least one special character (!@#$%^&*).";
+
+    return null;
+  };
 
   const handleGoogleSignIn = async () => {
+    setError(null);
     setLoading(true);
     const { user, error } = await signInWithGoogle();
     if (user) {
-      onAuth({ email: user.email || '', name: user.displayName || 'Warrior' });
+      onAuth({ 
+        uid: user.uid, 
+        email: user.email || '', 
+        name: user.displayName || 'Warrior' 
+      });
       setLoading(false);
     } else if (error === 'REDIRECTING') {
       // Page will redirect, don't stop loading spinner
@@ -33,25 +55,43 @@ export const Auth: React.FC<Props> = ({ onAuth }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+    
+    if (!isLogin) {
+      const validationError = validatePassword(password);
+      if (validationError) {
+        setError(validationError);
+        return;
+      }
+    }
+
     setLoading(true);
     
     if (isLogin) {
-      const { user, error } = await logIn(email, password);
+      const { user, error: loginError } = await logIn(email, password);
       if (user) {
-        onAuth({ email: user.email || '', name: user.displayName || email.split('@')[0] });
+        onAuth({ 
+          uid: user.uid, 
+          email: user.email || '', 
+          name: user.displayName || email.split('@')[0] 
+        });
       } else {
-        alert(error || "Invalid credentials.");
+        setError(loginError || "Invalid credentials.");
+        setLoading(false);
       }
     } else {
-      const { user, error } = await signUp(email, password);
+      const { user, error: signupError } = await signUp(email, password, name);
       if (user) {
-        alert("Account created successfully.");
-        onAuth({ email: user.email || '', name: name || email.split('@')[0] });
+        onAuth({ 
+          uid: user.uid, 
+          email: user.email || '', 
+          name: name || email.split('@')[0] 
+        });
       } else {
-        alert(error || "Signup failed.");
+        setError(signupError || "Signup failed.");
+        setLoading(false);
       }
     }
-    setLoading(false);
   };
 
   return (
@@ -90,6 +130,20 @@ export const Auth: React.FC<Props> = ({ onAuth }) => {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            <AnimatePresence mode="wait">
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="bg-rose-500/10 border border-rose-500/20 rounded-2xl p-4 text-xs font-bold text-rose-500 flex items-center gap-3"
+                >
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  {error}
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             <AnimatePresence mode="wait">
               {!isLogin && (
                 <motion.div

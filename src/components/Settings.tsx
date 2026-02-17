@@ -1,13 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Download, Upload, Trash2, 
   Smartphone, Bell, Shield, 
   SmartphoneIcon, Apple,
-  Palette, Sun, Moon, Zap
+  Palette, Sun, Moon, Zap, Edit3
 } from 'lucide-react';
 import { UserState } from '../types';
 import { cn } from '../utils/cn';
+import { DEFAULT_AVATARS } from '../lib/auth';
 
 interface Props {
   state: UserState;
@@ -17,6 +18,27 @@ interface Props {
 }
 
 export const Settings: React.FC<Props> = ({ state, onLogout, onDeleteData, onStateUpdate }) => {
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [newName, setNewName] = useState(state.auth?.name || '');
+
+  const xpForNextLevel = Math.pow(state.level, 2) * 100;
+  const prevLevelXP = Math.pow(state.level - 1, 2) * 100;
+  const currentLevelProgress = state.xp - prevLevelXP;
+  const levelXPRequirement = xpForNextLevel - prevLevelXP;
+  const progressPercentage = Math.max(0, Math.min((currentLevelProgress / levelXPRequirement) * 100, 100));
+
+  const getTierColor = (tier: string) => {
+    switch (tier) {
+      case 'Master': return 'from-purple-500 to-indigo-600';
+      case 'Ace': return 'from-red-500 to-orange-600';
+      case 'Platinum': return 'from-cyan-400 to-blue-500';
+      case 'Gold': return 'from-amber-400 to-yellow-600';
+      case 'Silver': return 'from-slate-300 to-slate-500';
+      case 'Bronze': return 'from-orange-700 to-orange-900';
+      default: return 'from-neutral-400 to-neutral-600';
+    }
+  };
+
   const accentColors = [
     { name: 'Emerald', hex: '#10b981' },
     { name: 'Royal Blue', hex: '#3b82f6' },
@@ -25,6 +47,23 @@ export const Settings: React.FC<Props> = ({ state, onLogout, onDeleteData, onSta
     { name: 'Amber', hex: '#f59e0b' },
     { name: 'White', hex: '#ffffff' },
   ];
+
+  const updateAvatar = (avatar: string) => {
+    if (!state.auth) return;
+    onStateUpdate({
+      ...state,
+      auth: { ...state.auth, avatar }
+    });
+  };
+
+  const saveName = () => {
+    if (!state.auth || !newName.trim()) return;
+    onStateUpdate({
+      ...state,
+      auth: { ...state.auth, name: newName }
+    });
+    setIsEditingName(false);
+  };
 
   const exportData = () => {
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state));
@@ -286,17 +325,97 @@ export const Settings: React.FC<Props> = ({ state, onLogout, onDeleteData, onSta
           )}>
             <div className="flex items-center gap-3 mb-8">
               <Shield className="w-6 h-6 text-blue-500" />
-              <h3 className="font-bold text-xl tracking-tight">Account & Data</h3>
+              <h3 className="font-bold text-xl tracking-tight">Identity Profile</h3>
             </div>
             
             <div className={cn(
-              "mb-8 p-4 border rounded-2xl flex items-center gap-4 transition-colors",
-              state.theme === 'light' ? "bg-slate-50 border-slate-200" : "bg-neutral-900 border-neutral-800"
+              "mb-8 p-6 border rounded-3xl transition-colors",
+              state.theme === 'light' ? "bg-slate-50 border-slate-200" : "bg-neutral-900/50 border-neutral-800"
             )}>
-              <div className="w-12 h-12 bg-neutral-800 rounded-full flex items-center justify-center text-xl">👤</div>
+              <div className="flex items-center gap-6 mb-8">
+                <div className="w-20 h-20 bg-neutral-900 border border-neutral-800 rounded-2xl flex items-center justify-center text-4xl shadow-inner">
+                  {state.auth?.avatar || '👤'}
+                </div>
+                <div className="flex-1">
+                  {isEditingName ? (
+                    <div className="flex gap-2">
+                      <input 
+                        type="text"
+                        value={newName}
+                        onChange={(e) => setNewName(e.target.value)}
+                        className="bg-neutral-800 border border-neutral-700 rounded-xl px-4 py-2 text-sm font-bold w-full outline-none focus:border-emerald-500"
+                      />
+                      <button 
+                        onClick={saveName}
+                        className="bg-emerald-500 text-black px-4 py-2 rounded-xl text-xs font-black uppercase"
+                      >
+                        Save
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <h4 className="font-bold text-xl">{state.auth?.name || 'Authorized User'}</h4>
+                      <button 
+                        onClick={() => setIsEditingName(true)}
+                        className="p-1.5 text-neutral-500 hover:text-white transition-colors"
+                      >
+                        <Edit3 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  )}
+                  <p className="text-xs text-neutral-500 mt-1">{state.auth?.email}</p>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    <div className={cn(
+                      "text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full bg-gradient-to-r text-white shadow-lg",
+                      getTierColor(state.tier)
+                    )}>
+                      {state.tier}
+                    </div>
+                    <div className="text-[10px] font-black uppercase tracking-widest bg-neutral-900 border border-neutral-800 text-neutral-400 px-3 py-1 rounded-full">
+                      Level {state.level}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mb-8 p-4 bg-neutral-900/30 rounded-2xl border border-neutral-800/50">
+                <div className="flex justify-between items-end mb-2">
+                  <div className="text-[10px] font-black text-neutral-500 uppercase tracking-widest">Protocol Experience</div>
+                  <div className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">
+                    {Math.round(currentLevelProgress)} / {levelXPRequirement} XP
+                  </div>
+                </div>
+                <div className="h-3 bg-neutral-900 rounded-full overflow-hidden p-0.5 border border-neutral-800">
+                  <motion.div 
+                    initial={{ width: 0 }}
+                    animate={{ width: `${progressPercentage}%` }}
+                    className={cn(
+                      "h-full rounded-full bg-gradient-to-r shadow-[0_0_15px_rgba(16,185,129,0.3)]",
+                      getTierColor(state.tier)
+                    )}
+                  />
+                </div>
+                <p className="text-[8px] text-neutral-600 font-bold uppercase tracking-[0.2em] mt-2 text-center">
+                  Continue consistent action to advance to next protocol tier
+                </p>
+              </div>
+
               <div>
-                <h4 className="font-bold text-sm">{state.auth?.name || 'Authorized User'}</h4>
-                <p className="text-xs text-neutral-500">{state.auth?.email}</p>
+                <label className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-4 block">Select Identity Avatar</label>
+                <div className="flex flex-wrap gap-2">
+                  {DEFAULT_AVATARS.map(av => (
+                    <button
+                      key={av}
+                      onClick={() => updateAvatar(av)}
+                      className={cn(
+                        "w-10 h-10 rounded-xl border flex items-center justify-center text-lg transition-all hover:scale-110",
+                        state.auth?.avatar === av ? "bg-emerald-500 border-emerald-500 text-black" : "bg-neutral-900 border-neutral-800 grayscale hover:grayscale-0"
+                      )}
+                    >
+                      {av}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 

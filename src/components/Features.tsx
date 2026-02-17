@@ -2,40 +2,40 @@ import { Zap, Shield, Rocket, Smartphone, Layout, BarChart } from 'lucide-react'
 
 const featureList = [
   {
-    title: "Lightning Fast",
-    description: "Built on Vite, your application will load instantly with incredible performance.",
+    title: "Metabolic Logic",
+    description: "Dynamic water and calorie tracking synced directly to your physical output.",
     icon: Zap,
-    color: "bg-amber-100 text-amber-600",
-  },
-  {
-    title: "Secure by Design",
-    description: "Built-in security best practices for robust and safe web applications.",
-    icon: Shield,
-    color: "bg-indigo-100 text-indigo-600",
-  },
-  {
-    title: "Seamless Scaling",
-    description: "Start small and grow your app as your user base expands effortlessly.",
-    icon: Rocket,
-    color: "bg-rose-100 text-rose-600",
-  },
-  {
-    title: "Mobile First",
-    description: "Perfectly responsive interfaces that look great on any device or screen size.",
-    icon: Smartphone,
-    color: "bg-sky-100 text-sky-600",
-  },
-  {
-    title: "Modern UI Components",
-    description: "Beautiful Tailwind CSS components that are easy to customize and reuse.",
-    icon: Layout,
     color: "bg-emerald-100 text-emerald-600",
   },
   {
-    title: "Insightful Analytics",
-    description: "Integrated data tracking and analytics to monitor your app's performance.",
+    title: "Stoic AI Directives",
+    description: "Real-time philosophical feedback based on your daily performance tier.",
+    icon: Shield,
+    color: "bg-slate-100 text-slate-800",
+  },
+  {
+    title: "Identity Onboarding",
+    description: "Choose from 100+ elite disciplines to redefine who you are becoming.",
+    icon: Rocket,
+    color: "bg-emerald-100 text-emerald-600",
+  },
+  {
+    title: "Native Deployment",
+    description: "Installable on iOS and Android as a high-performance standalone system.",
+    icon: Smartphone,
+    color: "bg-emerald-100 text-emerald-600",
+  },
+  {
+    title: "Obsidian Aesthetics",
+    description: "A luxury dark-mode interface designed for high-stakes productivity.",
+    icon: Layout,
+    color: "bg-slate-100 text-slate-800",
+  },
+  {
+    title: "Momentum Analytics",
+    description: "7-day trend heatmaps and categorical discipline breakdown.",
     icon: BarChart,
-    color: "bg-purple-100 text-purple-600",
+    color: "bg-emerald-100 text-emerald-600",
   },
 ];
 

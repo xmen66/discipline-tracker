@@ -7,8 +7,25 @@ export interface Habit {
 }
 
 export interface AuthData {
+  uid: string;
   email: string;
   name: string;
+  avatar?: string;
+  title?: string;
+  badge?: string;
+  level?: number;
+  xp?: number;
+  tier?: 'Bronze' | 'Silver' | 'Gold' | 'Platinum' | 'Ace' | 'Master';
+}
+
+export interface FeedEvent {
+  id: string;
+  userId: string;
+  userName: string;
+  userAvatar: string;
+  type: 'achievement' | 'streak' | 'stat_update' | 'habit_completed';
+  content: string;
+  timestamp: string;
 }
 
 export interface NotificationSettings {
@@ -46,6 +63,9 @@ export interface UserState {
   lastActive: string; // date string
   isPro: boolean;
   score: number;
+  level: number;
+  xp: number;
+  tier: 'Bronze' | 'Silver' | 'Gold' | 'Platinum' | 'Ace' | 'Master';
   theme: Theme;
   accentColor: string;
   dailyHistory: Record<string, DailyHistoryEntry>;

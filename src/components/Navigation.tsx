@@ -10,6 +10,7 @@ interface Props {
   onViewChange: (view: View) => void;
   onDownloadClick?: () => void;
   theme?: Theme;
+  user?: { name: string; avatar?: string; email?: string; level?: number; tier?: string };
 }
 
 const Logo = ({ theme }: { theme?: string }) => (
@@ -27,7 +28,7 @@ const Logo = ({ theme }: { theme?: string }) => (
   </div>
 );
 
-export const BottomNav: React.FC<Props> = ({ activeView, onViewChange, onDownloadClick, theme }) => {
+export const BottomNav: React.FC<Props> = ({ activeView, onViewChange, onDownloadClick, theme, user }) => {
   const tabs = [
     { id: 'dashboard', icon: LayoutDashboard, label: 'Dash' },
     { id: 'vision', icon: Target, label: 'Vision' },
@@ -42,6 +43,17 @@ export const BottomNav: React.FC<Props> = ({ activeView, onViewChange, onDownloa
       theme === 'light' ? "bg-white/80 border-slate-200" : "bg-[#050505]/80 border-neutral-900"
     )}>
       <div className="flex justify-between items-center">
+        {user && (
+           <button
+             onClick={() => onViewChange('settings')}
+             className="flex flex-col items-center gap-1"
+           >
+             <div className="w-8 h-8 bg-neutral-900 border border-neutral-800 rounded-lg flex items-center justify-center text-sm shadow-inner">
+               {user.avatar || '👤'}
+             </div>
+             <span className="text-[8px] font-black uppercase tracking-widest text-neutral-500">You</span>
+           </button>
+        )}
         {tabs.map((tab) => (
           <button
             key={tab.id}
@@ -72,7 +84,7 @@ export const BottomNav: React.FC<Props> = ({ activeView, onViewChange, onDownloa
   );
 };
 
-export const Sidebar: React.FC<Props> = ({ activeView, onViewChange, onDownloadClick, theme }) => {
+export const Sidebar: React.FC<Props> = ({ activeView, onViewChange, onDownloadClick, theme, user }) => {
   const tabs = [
     { id: 'dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { id: 'analytics', icon: BarChart2, label: 'Analytics' },
@@ -84,12 +96,36 @@ export const Sidebar: React.FC<Props> = ({ activeView, onViewChange, onDownloadC
 
   return (
     <aside className={cn(
-      "hidden md:flex flex-col w-64 h-screen fixed left-0 top-0 border-r p-8",
+      "hidden md:flex flex-col w-64 h-screen fixed left-0 top-0 border-r p-8 overflow-y-auto scrollbar-hide",
       theme === 'light' ? "bg-white border-slate-200" : "bg-[#0a0a0a] border-neutral-900"
     )}>
-      <div className="mb-12">
+      <div className="mb-8">
         <Logo theme={theme} />
       </div>
+
+      {user && (
+        <div 
+          onClick={() => onViewChange('settings')}
+          className={cn(
+            "mb-8 p-4 rounded-2xl border flex items-center gap-3 cursor-pointer hover:bg-neutral-900 transition-colors group",
+            theme === 'light' ? "bg-slate-50 border-slate-200" : "bg-neutral-900/50 border-neutral-800"
+          )}
+        >
+          <div className="w-10 h-10 bg-neutral-900 border border-neutral-800 rounded-xl flex items-center justify-center text-xl shadow-inner group-hover:scale-110 transition-transform">
+            {user.avatar || '👤'}
+          </div>
+          <div className="min-w-0">
+            <h4 className={cn(
+              "font-bold text-sm truncate",
+              theme === 'light' ? "text-slate-900" : "text-white"
+            )}>{user.name}</h4>
+            <div className="flex items-center gap-1.5">
+              <span className="text-[8px] font-black bg-neutral-900 text-neutral-400 px-1.5 py-0.5 rounded border border-neutral-800">LVL {user.level || 1}</span>
+              <span className="text-[8px] font-black text-emerald-500 uppercase tracking-widest truncate">{user.tier || 'Bronze'}</span>
+            </div>
+          </div>
+        </div>
+      )}
 
       <nav className="flex-1 space-y-2">
         {tabs.map((tab) => (

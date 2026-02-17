@@ -22,22 +22,25 @@ export const Hero = () => {
             <span className="text-sm font-medium text-slate-600">Now showing live preview</span>
           </div>
 
-          <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-slate-900">
-            Build Stunning <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">Web Experiences</span> Faster
+          <h1 className="text-5xl md:text-8xl font-black tracking-tighter text-slate-900 italic uppercase">
+            Destroy <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#10b981] to-emerald-800">Mediocrity</span>
           </h1>
 
-          <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
-            Create lightning-fast, modern websites with React, Vite, and Tailwind CSS. Seamlessly preview your changes in real-time.
+          <p className="text-lg md:text-xl text-slate-500 max-w-2xl mx-auto leading-relaxed font-medium">
+            The world's most advanced discipline tracking engine. SMASH the barriers between who you are and who you want to be.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <button className="w-full sm:w-auto px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full font-semibold shadow-lg shadow-indigo-200 flex items-center justify-center gap-2 group transition-all">
-              Launch Now
+            <button 
+              onClick={() => window.dispatchEvent(new CustomEvent('toggle-auth'))}
+              className="w-full sm:w-auto px-10 py-5 bg-black hover:bg-[#10b981] text-white rounded-full font-black uppercase tracking-widest shadow-2xl flex items-center justify-center gap-3 group transition-all"
+            >
+              Initialize Protocol
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </button>
-            <button className="w-full sm:w-auto px-8 py-4 bg-white border border-slate-200 text-slate-700 rounded-full font-semibold hover:bg-slate-50 flex items-center justify-center gap-2 transition-all">
-              Watch Demo
-              <Play className="w-5 h-5 text-indigo-600" />
+            <button className="w-full sm:w-auto px-10 py-5 bg-white border border-slate-200 text-slate-900 rounded-full font-black uppercase tracking-widest hover:bg-slate-50 flex items-center justify-center gap-3 transition-all">
+              Watch Briefing
+              <Play className="w-5 h-5 text-[#10b981] fill-current" />
             </button>
           </div>
 

@@ -11,22 +11,27 @@ export const Header = () => {
           <div className="p-1.5 bg-indigo-600 rounded-lg">
             <Layout className="w-5 h-5 text-white" />
           </div>
-          <span className="font-bold text-xl tracking-tight text-slate-900">LiveApp</span>
+          <span className="font-black text-xl tracking-tighter text-slate-900 italic">SMASH FIND</span>
         </div>
 
-        <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
-          <a href="#features" className="hover:text-indigo-600 transition-colors">Features</a>
-          <a href="#solutions" className="hover:text-indigo-600 transition-colors">Solutions</a>
-          <a href="#pricing" className="hover:text-indigo-600 transition-colors">Pricing</a>
-          <a href="#about" className="hover:text-indigo-600 transition-colors">About</a>
+        <nav className="hidden md:flex items-center gap-8 text-xs font-bold text-slate-500 uppercase tracking-widest">
+          <a href="#features" className="hover:text-[#10b981] transition-colors">Protocol</a>
+          <a href="#mission" className="hover:text-[#10b981] transition-colors">Mission</a>
+          <a href="#performance" className="hover:text-[#10b981] transition-colors">Performance</a>
         </nav>
 
         <div className="hidden md:flex items-center gap-4">
-          <button className="px-4 py-2 text-sm font-medium text-slate-700 hover:text-indigo-600 transition-colors">
-            Log in
+          <button 
+            onClick={() => window.dispatchEvent(new CustomEvent('toggle-auth'))}
+            className="px-6 py-2 text-xs font-black text-slate-900 uppercase tracking-widest hover:text-[#10b981] transition-colors"
+          >
+            Access System
           </button>
-          <button className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-full shadow-lg shadow-indigo-100 transition-all">
-            Get Started
+          <button 
+            onClick={() => window.dispatchEvent(new CustomEvent('toggle-auth'))}
+            className="px-6 py-2 text-xs font-black text-white bg-black hover:bg-[#10b981] rounded-full shadow-xl transition-all uppercase tracking-widest"
+          >
+            Join Elite
           </button>
         </div>
 
