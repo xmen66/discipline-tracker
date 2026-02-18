@@ -37,7 +37,7 @@ export const signUp = async (email: string, pass: string, name: string) => {
       title: 'The Drifter',
       createdAt: new Date().toISOString(),
       lastLogin: new Date().toISOString(),
-      identity: [],
+      selectedDisciplines: [],
       habits: [],
       criticalPath: [],
       score: 0,

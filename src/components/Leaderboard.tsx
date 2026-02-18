@@ -2,31 +2,45 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Trophy, Crown, TrendingUp, Users, Zap, MessageSquare, Clock } from 'lucide-react';
 import { cn } from '../utils/cn';
-import { subscribeToLeaderboard, subscribeToGlobalFeed } from '../lib/sync';
+import { syncLeaderboard, syncUserFeed } from '../lib/sync';
 import { FeedEvent } from '../types';
+import { useActiveProtocols } from '../hooks/useActiveProtocols';
 
 interface LeaderboardProps {
   currentUserId?: string;
 }
 
 export const Leaderboard: React.FC<LeaderboardProps> = ({ currentUserId }) => {
+  const activeProtocols = useActiveProtocols(156);
   const [leaders, setLeaders] = useState<any[]>([]);
   const [feed, setFeed] = useState<FeedEvent[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubLeaders = subscribeToLeaderboard((data) => {
+    // Real-time leaderboard synchronization
+    const unsubLeaders = syncLeaderboard((data) => {
       setLeaders(data);
       setLoading(false);
     });
 
-    const unsubFeed = subscribeToGlobalFeed((data) => {
-      setFeed(data);
+    // Real-time user feed synchronization
+    const unsubFeed = syncUserFeed((data) => {
+      // Data is already mapped in syncUserFeed to match UI needs
+      const mappedFeed: FeedEvent[] = data.map(u => ({
+        id: u.id,
+        userId: u.uid || u.id,
+        userName: u.displayName || 'Warrior',
+        userAvatar: u.avatar || '👤',
+        type: u.type || 'achievement',
+        content: u.content || `reached Level ${u.level || 1}`,
+        timestamp: u.timestamp || new Date().toISOString()
+      }));
+      setFeed(mappedFeed);
     });
 
     return () => {
-      unsubLeaders();
-      unsubFeed();
+      unsubLeaders && unsubLeaders();
+      unsubFeed && unsubFeed();
     };
   }, []);
 
@@ -69,7 +83,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ currentUserId }) => {
         </div>
         <div className="hidden md:flex items-center gap-4 bg-emerald-500/10 border border-emerald-500/20 px-4 py-2 rounded-2xl">
           <Users className="w-5 h-5 text-emerald-500" />
-          <span className="text-emerald-500 font-bold text-sm uppercase tracking-widest">{communityStats.totalUsers} ACTIVE PROTOCOLS</span>
+          <span className="text-emerald-500 font-bold text-sm uppercase tracking-widest">{activeProtocols} ACTIVE PROTOCOLS</span>
         </div>
       </div>
 
@@ -121,25 +135,25 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ currentUserId }) => {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: idx * 0.05 }}
-                  key={leader.uid}
+                  key={leader.id || leader.uid}
                   className={cn(
                     "p-6 flex items-center justify-between group transition-colors",
-                    leader.uid === currentUserId ? "bg-emerald-500/5 border-l-4 border-l-emerald-500" : "hover:bg-neutral-900/50"
+                    (leader.uid === currentUserId || leader.id === currentUserId) ? "bg-emerald-500/5 border-l-4 border-l-emerald-500" : "hover:bg-neutral-900/50"
                   )}
                 >
                   <div className="flex items-center gap-6">
                     <span className={cn(
-                      "font-black italic text-xl w-8",
+                      "font-black italic text-xl w-8 text-center",
                       idx === 0 ? "text-amber-500" : idx === 1 ? "text-neutral-300" : idx === 2 ? "text-amber-700" : "text-neutral-700"
                     )}>
                       {idx + 1}
                     </span>
-                    <div className="w-12 h-12 bg-neutral-900 border border-neutral-800 rounded-2xl flex items-center justify-center text-2xl shadow-inner">
+                    <div className="w-12 h-12 bg-neutral-900 border border-neutral-800 rounded-2xl flex items-center justify-center text-2xl shadow-inner shrink-0">
                       {leader.avatar || '👤'}
                     </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h4 className={cn("font-bold text-lg flex items-center gap-2", leader.uid === currentUserId ? "text-emerald-500" : "text-neutral-200")}>
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h4 className={cn("font-bold text-lg truncate", (leader.uid === currentUserId || leader.id === currentUserId) ? "text-emerald-500" : "text-neutral-200")}>
                           {leader.displayName || 'Warrior'}
                         </h4>
                         <span className={cn(
@@ -153,7 +167,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ currentUserId }) => {
                       <div className="flex items-center gap-2 mt-0.5">
                         <p className="text-[10px] text-neutral-500 font-black uppercase tracking-widest">{leader.title || 'The Drifter'}</p>
                         {idx < 3 && <span className="text-[8px] bg-amber-500/10 text-amber-500 px-1.5 py-0.5 rounded border border-amber-500/20 font-black uppercase">ELITE</span>}
-                        {leader.uid === currentUserId && <span className="text-[8px] bg-emerald-500/20 text-emerald-500 px-1.5 py-0.5 rounded uppercase font-black">ACTIVE</span>}
+                        {(leader.uid === currentUserId || leader.id === currentUserId) && <span className="text-[8px] bg-emerald-500/20 text-emerald-500 px-1.5 py-0.5 rounded uppercase font-black">ACTIVE</span>}
                       </div>
                     </div>
                   </div>

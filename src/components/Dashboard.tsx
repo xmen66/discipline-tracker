@@ -4,8 +4,9 @@ import {
   Plus, Minus, Trophy, BarChart3, 
   Droplets, Scale, CheckCircle2,
   Calendar, AlertCircle, Smartphone, X,
-  Activity, Flame, Footprints, Zap
+  Activity, Flame, Footprints, Zap, Users
 } from 'lucide-react';
+import { useActiveProtocols } from '../hooks/useActiveProtocols';
 import { 
   XAxis, YAxis, CartesianGrid, 
   Tooltip, ResponsiveContainer, AreaChart, Area 
@@ -39,6 +40,7 @@ import { DownloadModal } from './DownloadModal';
 import { useStepTracker } from '../hooks/useStepTracker';
 
 export const Dashboard: React.FC<Props> = ({ state, onStateUpdate, onSealPromise, showOnlyStats = false }) => {
+  const activeProtocols = useActiveProtocols(156);
   const { steps: autoSteps, isTracking, startTracking, stopTracking } = useStepTracker(state.auth?.uid);
 
   useEffect(() => {
@@ -249,6 +251,35 @@ export const Dashboard: React.FC<Props> = ({ state, onStateUpdate, onSealPromise
 
   return (
     <div className="space-y-8 pb-24 md:pb-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
+        <div>
+          <h2 className="text-4xl font-black italic tracking-tighter uppercase italic">Control</h2>
+          <p className="text-[#10b981] font-bold uppercase text-[10px] tracking-[0.3em] mt-1">Status: Operational</p>
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="bg-[#0a0a0a] border border-neutral-900 px-4 py-2 rounded-2xl flex items-center gap-3">
+             <div className="relative">
+                <Users className="w-4 h-4 text-emerald-500" />
+                <span className="absolute -top-1 -right-1 w-2 h-2 bg-emerald-500 rounded-full animate-ping" />
+                <span className="absolute -top-1 -right-1 w-2 h-2 bg-emerald-500 rounded-full" />
+             </div>
+             <div className="flex flex-col">
+                <span className="text-[10px] font-black text-white tabular-nums">{activeProtocols}</span>
+                <span className="text-[8px] font-bold text-neutral-500 uppercase tracking-widest leading-none">Protocols Active</span>
+             </div>
+          </div>
+          <div className="bg-[#0a0a0a] border border-neutral-900 px-4 py-2 rounded-2xl flex items-center gap-3">
+             <div className="relative">
+                <Zap className="w-4 h-4 text-amber-500" />
+             </div>
+             <div className="flex flex-col">
+                <span className="text-[10px] font-black text-white tabular-nums">{state.streak}</span>
+                <span className="text-[8px] font-bold text-neutral-500 uppercase tracking-widest leading-none">Current Streak</span>
+             </div>
+          </div>
+        </div>
+      </div>
+
       <AnimatePresence>
         {showDownloadBanner && (
           <motion.div 

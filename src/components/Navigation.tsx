@@ -1,7 +1,9 @@
 import React from 'react';
-import { LayoutDashboard, BarChart2, BookText, Trophy, Settings, Target, Zap, Download } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { LayoutDashboard, BarChart2, BookText, Trophy, Settings, Target, Zap, Download, Activity } from 'lucide-react';
 import { cn } from '../utils/cn';
 import { Theme } from '../types';
+import { useActiveProtocols } from '../hooks/useActiveProtocols';
 
 export type View = 'dashboard' | 'analytics' | 'vision' | 'journal' | 'leaderboard' | 'settings';
 
@@ -29,6 +31,7 @@ const Logo = ({ theme }: { theme?: string }) => (
 );
 
 export const BottomNav: React.FC<Props> = ({ activeView, onViewChange, onDownloadClick, theme, user }) => {
+  const activeProtocols = useActiveProtocols(156);
   const tabs = [
     { id: 'dashboard', icon: LayoutDashboard, label: 'Dash' },
     { id: 'vision', icon: Target, label: 'Vision' },
@@ -42,6 +45,14 @@ export const BottomNav: React.FC<Props> = ({ activeView, onViewChange, onDownloa
       "fixed bottom-0 left-0 right-0 z-40 px-6 pb-8 pt-4 backdrop-blur-xl border-t md:hidden",
       theme === 'light' ? "bg-white/80 border-slate-200" : "bg-[#050505]/80 border-neutral-900"
     )}>
+      {/* Active Protocols Mobile Badge */}
+      <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-[#0a0a0a]/90 backdrop-blur-md border border-neutral-800 px-4 py-2 rounded-full flex items-center gap-2 shadow-2xl">
+        <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
+        <span className="text-[9px] font-black uppercase tracking-widest text-neutral-400">
+          <span className="text-white">{activeProtocols}</span> ACTIVE PROTOCOLS
+        </span>
+      </div>
+
       <div className="flex justify-between items-center">
         {user && (
            <button
@@ -85,6 +96,7 @@ export const BottomNav: React.FC<Props> = ({ activeView, onViewChange, onDownloa
 };
 
 export const Sidebar: React.FC<Props> = ({ activeView, onViewChange, onDownloadClick, theme, user }) => {
+  const activeProtocols = useActiveProtocols(156);
   const tabs = [
     { id: 'dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { id: 'analytics', icon: BarChart2, label: 'Analytics' },
@@ -162,6 +174,26 @@ export const Sidebar: React.FC<Props> = ({ activeView, onViewChange, onDownloadC
       </nav>
 
       <div className="mt-auto space-y-4">
+        <div className={cn(
+          "rounded-2xl p-4 border border-emerald-500/10 bg-emerald-500/5",
+        )}>
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <Activity className="w-3 h-3 text-emerald-500" />
+              <p className="text-[10px] text-emerald-500 font-bold uppercase tracking-widest">Active Protocols</p>
+            </div>
+            <span className="text-[10px] font-black text-emerald-400 tabular-nums">{activeProtocols}</span>
+          </div>
+          <div className="h-1 w-full bg-neutral-900 rounded-full overflow-hidden">
+            <motion.div 
+              initial={{ width: "60%" }}
+              animate={{ width: ["60%", "65%", "62%", "68%", "64%"] }}
+              transition={{ repeat: Infinity, duration: 5, ease: "easeInOut" }}
+              className="h-full bg-emerald-500"
+            />
+          </div>
+        </div>
+
         <div className={cn(
           "rounded-2xl p-4 border",
           theme === 'light' ? "bg-slate-50 border-slate-200" : "bg-neutral-900/50 border-neutral-800"

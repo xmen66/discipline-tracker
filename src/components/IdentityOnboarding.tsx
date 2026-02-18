@@ -1,34 +1,29 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, ArrowRight, Search, Shield, Zap, Target, Heart } from 'lucide-react';
-import { ALL_DISCIPLINES } from '../data/disciplines';
+import { Check, ArrowRight, Zap, Target, Plus, X } from 'lucide-react';
 import { cn } from '../utils/cn';
 
 interface Props {
-  onComplete: (selectedIds: string[]) => void;
+  onComplete: (selectedNames: string[]) => void;
+  initialDisciplines?: string[];
 }
 
-export const IdentityOnboarding: React.FC<Props> = ({ onComplete }) => {
-  const [step, setStep] = useState(1);
-  const [selectedHabits, setSelectedHabits] = useState<string[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
+export const IdentityOnboarding: React.FC<Props> = ({ onComplete, initialDisciplines = [] }) => {
+  const [step, setStep] = useState(initialDisciplines.length > 0 ? 2 : 1);
+  const [selectedHabits, setSelectedHabits] = useState<string[]>(initialDisciplines);
+  const [customDiscipline, setCustomDiscipline] = useState('');
 
-  const toggleHabit = (id: string) => {
-    setSelectedHabits(prev => 
-      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
-    );
+  const addDiscipline = (e?: React.FormEvent) => {
+    e?.preventDefault();
+    if (customDiscipline.trim() && !selectedHabits.includes(customDiscipline.trim())) {
+      setSelectedHabits(prev => [...prev, customDiscipline.trim()]);
+      setCustomDiscipline('');
+    }
   };
 
-  const categories = [
-    { name: 'Physical', icon: <Heart className="w-5 h-5" />, color: 'text-rose-400' },
-    { name: 'Focus', icon: <Zap className="w-5 h-5" />, color: 'text-amber-400' },
-    { name: 'Social/Financial', icon: <Shield className="w-5 h-5" />, color: 'text-emerald-400' },
-    { name: 'Financial', icon: <Target className="w-5 h-5" />, color: 'text-blue-400' }
-  ];
-
-  const filteredHabits = ALL_DISCIPLINES.filter(h => 
-    h.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const removeDiscipline = (habit: string) => {
+    setSelectedHabits(prev => prev.filter(h => h !== habit));
+  };
 
   return (
     <div className="min-h-screen bg-[#050505] text-white flex flex-col p-6 md:p-12">
@@ -70,8 +65,8 @@ export const IdentityOnboarding: React.FC<Props> = ({ onComplete }) => {
                 Who are you <br />
                 <span className="text-emerald-500">becoming?</span>
               </h1>
-              <p className="text-neutral-400 text-lg mb-12 max-w-xl mx-auto">
-                Identity-based habits are the most powerful. Select the disciplines that define your future self.
+              <p className="text-neutral-400 text-lg mb-8 max-w-2xl mx-auto leading-relaxed">
+                Identity-based habits are the most powerful engine for human transformation. We do not just track actions; we engineer a new self. The difference between those who achieve absolute mastery and those who stagnate is the clarity of their identity. When you define who you are becoming, every choice becomes an affirmation of that truth. This is the SMASH FIND protocol: a high-stakes alignment of your daily disciplines with your strategic vision. Every step, every gram of nutrition, and every hour of deep work is a vote for the person you are evolving into. You are the architect of your own evolution. Select the disciplines that will serve as the foundation of your new elite reality. The journey to the top of the hierarchy begins with a single, non-negotiable commitment to excellence. Establish your protocol. Become the master of your internal system.
               </p>
               <button 
                 onClick={() => setStep(2)}
@@ -92,60 +87,63 @@ export const IdentityOnboarding: React.FC<Props> = ({ onComplete }) => {
               className="flex-1 flex flex-col"
             >
               <div className="mb-8">
-                <h2 className="text-2xl font-bold mb-2">Build Your Identity</h2>
-                <p className="text-neutral-400">Select at least 5 disciplines to start your system.</p>
+                <h2 className="text-4xl font-black italic tracking-tighter uppercase">Build Your Identity</h2>
+                <p className="text-neutral-400 font-bold uppercase text-[10px] tracking-[0.2em] mt-1">Select at least 5 disciplines to start your system.</p>
               </div>
 
-              <div className="relative mb-6">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-500 w-5 h-5" />
+              <form onSubmit={addDiscipline} className="relative mb-8">
                 <input 
                   type="text"
-                  placeholder="Search 100+ disciplines..."
-                  className="w-full bg-neutral-900 border border-neutral-800 rounded-2xl py-4 pl-12 pr-4 focus:border-emerald-500 outline-none transition-colors"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Type a discipline (e.g. 5AM Wake Up, Deep Work, etc.)"
+                  className="w-full bg-neutral-900 border border-neutral-800 rounded-2xl py-5 px-6 pr-20 focus:border-emerald-500 outline-none transition-colors text-lg font-bold"
+                  value={customDiscipline}
+                  onChange={(e) => setCustomDiscipline(e.target.value)}
                 />
-              </div>
+                <button 
+                  type="submit"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 bg-emerald-500 text-black p-2 rounded-xl hover:bg-emerald-400 transition-colors"
+                >
+                  <Plus className="w-6 h-6" />
+                </button>
+              </form>
 
-              <div className="flex-1 overflow-y-auto max-h-[50vh] pr-2 space-y-8 scrollbar-hide">
-                {categories.map(cat => (
-                  <div key={cat.name}>
-                    <div className="flex items-center gap-2 mb-4">
-                      <span className={cat.color}>{cat.icon}</span>
-                      <h3 className="font-semibold text-neutral-300 uppercase text-xs tracking-widest">{cat.name}</h3>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {filteredHabits.filter(h => h.category === cat.name || (cat.name === 'Financial' && h.category === 'Social/Financial')).map(habit => (
-                        <button
-                          key={habit.id}
-                          onClick={() => toggleHabit(habit.id)}
-                          className={cn(
-                            "px-4 py-2 rounded-full border text-sm transition-all flex items-center gap-2",
-                            selectedHabits.includes(habit.id) 
-                              ? "bg-emerald-500 border-emerald-500 text-black font-semibold" 
-                              : "bg-neutral-900 border-neutral-800 text-neutral-400 hover:border-neutral-600"
-                          )}
-                        >
-                          {selectedHabits.includes(habit.id) && <Check className="w-4 h-4" />}
-                          {habit.name}
-                        </button>
-                      ))}
-                    </div>
+              <div className="flex-1 overflow-y-auto max-h-[45vh] pr-2 scrollbar-hide">
+                <div className="flex flex-wrap gap-3">
+                  <AnimatePresence>
+                    {selectedHabits.map((habit) => (
+                      <motion.button
+                        key={habit}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        onClick={() => removeDiscipline(habit)}
+                        className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-500 px-6 py-3 rounded-2xl font-bold flex items-center gap-3 hover:bg-rose-500/10 hover:border-rose-500/30 hover:text-rose-500 transition-all group"
+                      >
+                        {habit}
+                        <X className="w-4 h-4 opacity-50 group-hover:opacity-100" />
+                      </motion.button>
+                    ))}
+                  </AnimatePresence>
+                </div>
+                {selectedHabits.length === 0 && (
+                  <div className="h-full flex flex-col items-center justify-center text-neutral-600 border-2 border-dashed border-neutral-900 rounded-[2.5rem] py-20">
+                    <Target className="w-12 h-12 mb-4 opacity-20" />
+                    <p className="font-bold uppercase tracking-widest text-xs">No disciplines defined yet</p>
                   </div>
-                ))}
+                )}
               </div>
 
-              <div className="mt-8 flex justify-between items-center bg-[#0a0a0a] p-6 rounded-3xl border border-neutral-900">
-                <div>
-                  <span className="text-3xl font-bold text-emerald-500">{selectedHabits.length}</span>
-                  <span className="text-neutral-500 ml-2">Selected</span>
+              <div className="mt-8 flex justify-between items-center bg-[#0a0a0a] p-8 rounded-[2.5rem] border border-neutral-900 shadow-2xl">
+                <div className="flex flex-col">
+                  <span className="text-4xl font-black italic tracking-tighter text-emerald-500">{selectedHabits.length}</span>
+                  <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Disciplines Locked</span>
                 </div>
                 <button 
                   disabled={selectedHabits.length < 5}
                   onClick={() => setStep(3)}
-                  className="bg-white text-black px-8 py-3 rounded-full font-bold flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="bg-white text-black px-10 py-4 rounded-full font-black uppercase tracking-widest flex items-center gap-3 disabled:opacity-20 disabled:cursor-not-allowed hover:bg-emerald-500 transition-colors"
                 >
-                  Continue
+                  Initialize Protocol
                   <ArrowRight className="w-5 h-5" />
                 </button>
               </div>

@@ -45,7 +45,7 @@ export type Theme = 'dark' | 'light';
 
 export interface UserState {
   auth?: AuthData;
-  identity: string[];
+  selectedDisciplines: string[];
   habits: Habit[];
   criticalPath: CriticalTask[];
   waterIntake: number; // in ml
@@ -71,6 +71,7 @@ export interface UserState {
   dailyHistory: Record<string, DailyHistoryEntry>;
   notificationSettings: NotificationSettings;
   customWaterGoal?: number;
+  onboardingCompleted?: boolean;
 }
 
 export interface DailyHistoryEntry {

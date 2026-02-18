@@ -9,7 +9,6 @@ import { Sidebar, BottomNav, View } from './components/Navigation';
 import { DownloadModal } from './components/DownloadModal';
 import { Auth } from './components/Auth';
 import { UserState, Habit, DailyHistoryEntry, NotificationSettings } from './types';
-import { ALL_DISCIPLINES } from './data/disciplines';
 import { DisciplineEngine } from './utils/DisciplineEngine';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from './utils/cn';
@@ -24,11 +23,14 @@ const DEFAULT_NOTIFICATIONS: NotificationSettings = {
   reminderInterval: 60
 };
 
+import { useRef } from 'react';
+
 export function App() {
   const [userState, setUserState] = useState<UserState | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeView, setActiveView] = useState<View>('dashboard');
   const [isDownloadOpen, setIsDownloadOpen] = useState(false);
+  const isInitialLoadComplete = useRef(false);
 
   useEffect(() => {
     // Check for redirect result on mount
@@ -39,45 +41,65 @@ export function App() {
     // Firebase Auth State Listener
     const unsubscribe = subscribeToAuthChanges(async (firebaseUser) => {
       if (firebaseUser) {
+        setLoading(true);
         const email = firebaseUser.email || '';
         const uid = firebaseUser.uid;
         
-        // 1. Try to load from Firestore first for device sync
+        // 1. Try to load from Firestore first for device sync (Source of Truth)
         const remoteData = await loadUserDataFromFirestore(uid);
         
-        // 2. Fallback to localStorage if no Firestore data
+        // 2. Check local fallback (Legacy Cache)
         const savedLocal = localStorage.getItem(`smash_user_data_${email}`);
         
-        if (remoteData) {
-          // Sync found - merge and use
+        if (remoteData && Object.keys(remoteData).length > 2) {
+          // Sync found and has real data - use it as Source of Truth
           const avatar = (remoteData as any).avatar || (remoteData as any).auth?.avatar || '👤';
-          setUserState({
+          const name = (remoteData as any).displayName || (remoteData as any).auth?.name || firebaseUser.displayName || email.split('@')[0];
+          
+          const loadedState: UserState = {
             ...remoteData as any,
+            // Check for both legacy and new field
+            onboardingCompleted: (remoteData as any).onboardingCompleted ?? (((remoteData as any).selectedDisciplines?.length > 0) || ((remoteData as any).identity?.length > 0)),
+            selectedDisciplines: (remoteData as any).selectedDisciplines || (remoteData as any).identity || [],
             auth: { 
               uid, 
               email, 
-              name: (remoteData as any).displayName || firebaseUser.displayName || (remoteData as any).auth?.name || email.split('@')[0],
-              avatar: avatar
+              name,
+              avatar: avatar,
+              level: (remoteData as any).level || 1,
+              tier: (remoteData as any).tier || 'Bronze',
+              xp: (remoteData as any).xp || 0
             }
-          });
+          };
           
-          // Update local cache
-          localStorage.setItem(`smash_user_data_${email}`, JSON.stringify(remoteData));
+          setUserState(loadedState);
+          localStorage.setItem(`smash_user_data_${email}`, JSON.stringify(loadedState));
         } else if (savedLocal) {
           try {
             const parsed = JSON.parse(savedLocal);
-            const newState = {
+            const newState: UserState = {
               ...parsed,
-              auth: { uid, email, name: firebaseUser.displayName || parsed.auth?.name || email.split('@')[0] }
+              // Legacy support
+              onboardingCompleted: parsed.onboardingCompleted ?? (parsed.selectedDisciplines?.length > 0 || parsed.identity?.length > 0),
+              selectedDisciplines: parsed.selectedDisciplines || parsed.identity || [],
+              auth: { 
+                uid, 
+                email, 
+                name: firebaseUser.displayName || parsed.auth?.name || email.split('@')[0],
+                avatar: parsed.auth?.avatar || '👤',
+                level: parsed.level || 1,
+                tier: parsed.tier || 'Bronze',
+                xp: parsed.xp || 0
+              }
             };
             setUserState(newState);
-            // Migrate local to Firestore
+            // Migrate local to Firestore immediately to prevent future loss
             await saveUserDataToFirestore(uid, newState);
           } catch (e) {
             console.error("Failed to load local state", e);
           }
         } else {
-          // Initialize new user
+          // Initialize brand new user ONLY if no remote or local data exists
           const newUserState: UserState = {
             auth: { 
               uid, 
@@ -88,7 +110,7 @@ export function App() {
               xp: 0,
               tier: 'Bronze'
             },
-            identity: [],
+            selectedDisciplines: [],
             habits: [],
             criticalPath: [],
             waterIntake: 0,
@@ -109,13 +131,17 @@ export function App() {
             theme: 'dark',
             accentColor: '#10b981',
             dailyHistory: {},
-            notificationSettings: DEFAULT_NOTIFICATIONS
+            notificationSettings: DEFAULT_NOTIFICATIONS,
+            onboardingCompleted: false
           };
           setUserState(newUserState);
           await saveUserDataToFirestore(uid, newUserState);
         }
+        isInitialLoadComplete.current = true;
       } else {
         setUserState(null);
+        isInitialLoadComplete.current = false;
+        // Do not clear localStorage on logout to maintain cache for next login
       }
       setLoading(false);
     });
@@ -162,20 +188,11 @@ export function App() {
   }, [userState?.notificationSettings]);
 
   const saveState = useCallback((newState: UserState) => {
+    if (!isInitialLoadComplete.current) return;
+
     const score = DisciplineEngine.calculateScore(newState);
-    
-    // Level & XP Logic
-    // XP is earned based on score and streak multiplier
-    // Only add XP if score > 0 and it's a new interaction (simplified for now to recalculate on changes)
-    // In a real app, you'd only add XP on "completions" or daily seals
-    // Here we'll simulate XP growth based on score
-    
     let xp = newState.xp;
-    let level = newState.level;
-    let tier = newState.tier;
-    
-    // Dynamic Level Calculation
-    level = Math.floor(Math.sqrt(xp / 100)) + 1;
+    const level = Math.floor(Math.sqrt(xp / 100)) + 1;
     
     const getTier = (l: number): UserState['tier'] => {
       if (l >= 80) return 'Master';
@@ -186,7 +203,7 @@ export function App() {
       return 'Bronze';
     };
     
-    tier = getTier(level);
+    const tier = getTier(level);
 
     const finalState: UserState = { 
       ...newState, 
@@ -202,21 +219,29 @@ export function App() {
     };
     
     setUserState(finalState);
-    if (finalState.auth?.email && finalState.auth?.uid) {
+    
+    // Persist to LocalStorage (Immediate cache)
+    if (finalState.auth?.email) {
       localStorage.setItem(`smash_user_data_${finalState.auth.email}`, JSON.stringify(finalState));
+    }
+
+    // Persist to Firestore (Debounced or Throttled would be better, but we'll do direct for now)
+    if (finalState.auth?.uid) {
       saveUserDataToFirestore(finalState.auth.uid, finalState);
     }
   }, []);
 
-  const handleOnboardingComplete = (selectedIds: string[]) => {
+  const handleOnboardingComplete = (selectedNames: string[]) => {
     if (!userState) return;
 
-    const habits: Habit[] = selectedIds.map(id => {
-      const base = ALL_DISCIPLINES.find(d => d.id === id);
+    const habits: Habit[] = selectedNames.map(name => {
+      const existing = userState.habits.find(h => h.name === name);
+      if (existing) return existing;
+
       return {
-        id,
-        name: base?.name || id,
-        category: (base?.category as any) || 'Physical',
+        id: name.toLowerCase().replace(/\s+/g, '-'),
+        name,
+        category: 'Physical', // Default category for custom disciplines
         completed: false,
         streak: 0
       };
@@ -224,22 +249,23 @@ export function App() {
 
     const newState: UserState = {
       ...userState,
-      identity: selectedIds,
+      selectedDisciplines: selectedNames,
       habits,
-      criticalPath: [],
-      waterIntake: 0,
-      steps: 0,
-      calories: 0,
-      weight: 0,
-      targetWeight: 75,
-      streak: 0,
+      criticalPath: userState.criticalPath || [],
+      waterIntake: userState.waterIntake || 0,
+      steps: userState.steps || 0,
+      calories: userState.calories || 0,
+      weight: userState.weight || 0,
+      targetWeight: userState.targetWeight || 75,
+      streak: userState.streak || 0,
       lastActive: new Date().toISOString(),
       isPro: true, 
-      score: 0,
-      theme: 'dark',
-      accentColor: '#10b981',
-      dailyHistory: {},
-      notificationSettings: DEFAULT_NOTIFICATIONS
+      score: userState.score || 0,
+      theme: userState.theme || 'dark',
+      accentColor: userState.accentColor || '#10b981',
+      dailyHistory: userState.dailyHistory || {},
+      notificationSettings: userState.notificationSettings || DEFAULT_NOTIFICATIONS,
+      onboardingCompleted: true
     };
 
     saveState(newState);
@@ -356,10 +382,13 @@ export function App() {
     );
   }
 
-  if (userState.identity.length === 0) {
+  if (!userState.onboardingCompleted) {
     return (
       <div className="min-h-screen font-sans">
-        <IdentityOnboarding onComplete={handleOnboardingComplete} />
+        <IdentityOnboarding 
+          onComplete={handleOnboardingComplete} 
+          initialDisciplines={userState.selectedDisciplines}
+        />
       </div>
     );
   }

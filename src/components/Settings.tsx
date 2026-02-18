@@ -323,9 +323,17 @@ export const Settings: React.FC<Props> = ({ state, onLogout, onDeleteData, onSta
             "rounded-[2rem] p-8 shadow-xl border transition-colors",
             state.theme === 'light' ? "bg-white border-slate-200" : "bg-[#0a0a0a] border-neutral-900"
           )}>
-            <div className="flex items-center gap-3 mb-8">
-              <Shield className="w-6 h-6 text-blue-500" />
-              <h3 className="font-bold text-xl tracking-tight">Identity Profile</h3>
+            <div className="flex justify-between items-center mb-8">
+              <div className="flex items-center gap-3">
+                <Shield className="w-6 h-6 text-blue-500" />
+                <h3 className="font-bold text-xl tracking-tight">Identity Profile</h3>
+              </div>
+              <button
+                onClick={() => onStateUpdate({ ...state, onboardingCompleted: false })}
+                className="text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-xl bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white transition-colors"
+              >
+                Edit Protocols
+              </button>
             </div>
             
             <div className={cn(
