@@ -35,7 +35,7 @@ export function App() {
   useEffect(() => {
     // Check for redirect result on mount
     handleSignInRedirect().then(({ error }) => {
-      if (error) console.error("Redirect Auth Error:", error);
+      if (error) { /* Silently handle redirect error */ }
     });
 
     // Firebase Auth State Listener

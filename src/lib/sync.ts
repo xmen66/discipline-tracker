@@ -55,13 +55,8 @@ export const saveUserDataToFirestore = async (uid: string, data: any) => {
 
     // Use setDoc with merge: true to ensure we never overwrite fields that might be updated elsewhere
     await setDoc(userRef, persistentData, { merge: true });
-    
   } catch (error: any) {
-    if (error.code === 'permission-denied') {
-      console.error('Firestore Security: Permission denied. Check rules.');
-    } else {
-      console.error('Firestore Save Error:', error.message);
-    }
+    // Silent fail for background sync
   }
 };
 

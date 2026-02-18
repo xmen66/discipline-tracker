@@ -1,17 +1,30 @@
 {
   "name": "Smashfind Discipline System",
   "short_name": "Smashfind",
-  "description": "The world's most advanced discipline tracking system.",
+  "description": "The world's most advanced high-performance discipline engine.",
   "start_url": "/",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#050505",
-  "theme_color": "#10b981",
+  "theme_color": "#050505",
   "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3050/3050525.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
     {
       "src": "https://cdn-icons-png.flaticon.com/512/3050/3050525.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3050/3050525.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }
