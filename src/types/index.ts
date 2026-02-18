@@ -43,6 +43,14 @@ export interface CriticalTask {
 
 export type Theme = 'dark' | 'light';
 
+export interface Goal {
+  id: string;
+  title: string;
+  deadline: string;
+  category: string;
+  completed: boolean;
+}
+
 export interface UserState {
   auth?: AuthData;
   selectedDisciplines: string[];
@@ -69,6 +77,7 @@ export interface UserState {
   theme: Theme;
   accentColor: string;
   dailyHistory: Record<string, DailyHistoryEntry>;
+  visionBoard?: Goal[];
   notificationSettings: NotificationSettings;
   customWaterGoal?: number;
   onboardingCompleted?: boolean;

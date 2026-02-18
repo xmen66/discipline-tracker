@@ -8,7 +8,7 @@ import { Settings } from './components/Settings';
 import { Sidebar, BottomNav, View } from './components/Navigation';
 import { DownloadModal } from './components/DownloadModal';
 import { Auth } from './components/Auth';
-import { UserState, Habit, DailyHistoryEntry, NotificationSettings } from './types';
+import { UserState, Habit, DailyHistoryEntry, NotificationSettings, Goal } from './types';
 import { DisciplineEngine } from './utils/DisciplineEngine';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from './utils/cn';
@@ -131,6 +131,7 @@ export function App() {
             theme: 'dark',
             accentColor: '#10b981',
             dailyHistory: {},
+            visionBoard: [],
             notificationSettings: DEFAULT_NOTIFICATIONS,
             onboardingCompleted: false
           };
@@ -402,7 +403,12 @@ export function App() {
       case 'journal':
         return <Journal state={userState} />;
       case 'vision':
-        return <VisionBoard />;
+        return (
+          <VisionBoard 
+            goals={userState.visionBoard || []} 
+            onUpdate={(goals: Goal[]) => updateState(prev => ({ ...prev, visionBoard: goals }))} 
+          />
+        );
       case 'leaderboard':
         return <Leaderboard currentUserId={userState.auth?.uid} />;
       case 'settings':

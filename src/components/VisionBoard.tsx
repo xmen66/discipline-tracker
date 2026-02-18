@@ -3,21 +3,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Target, Plus, Calendar, Flag, Trash2, CheckCircle2 } from 'lucide-react';
 import { cn } from '../utils/cn';
 
-interface Goal {
-  id: string;
-  title: string;
-  deadline: string;
-  category: string;
-  completed: boolean;
+import { Goal } from '../types';
+
+interface Props {
+  goals: Goal[];
+  onUpdate: (goals: Goal[]) => void;
 }
 
-export const VisionBoard: React.FC = () => {
-  const [goals, setGoals] = useState<Goal[]>([
-    { id: '1', title: 'Complete 75 Hard Challenge', deadline: '2025-06-01', category: 'Physical', completed: false },
-    { id: '2', title: 'Achieve $10k Monthly Recurring Revenue', deadline: '2025-12-31', category: 'Financial', completed: false },
-    { id: '3', title: 'Master Stoic Principles', deadline: '2025-03-15', category: 'Mental', completed: true },
-  ]);
-
+export const VisionBoard: React.FC<Props> = ({ goals, onUpdate }) => {
   const [newGoal, setNewGoal] = useState('');
   const [newDeadline, setNewDeadline] = useState('');
 
@@ -30,18 +23,18 @@ export const VisionBoard: React.FC = () => {
         category: 'Personal',
         completed: false,
       };
-      setGoals([...goals, goal]);
+      onUpdate([...goals, goal]);
       setNewGoal('');
       setNewDeadline('');
     }
   };
 
   const toggleGoal = (id: string) => {
-    setGoals(goals.map(g => g.id === id ? { ...g, completed: !g.completed } : g));
+    onUpdate(goals.map(g => g.id === id ? { ...g, completed: !g.completed } : g));
   };
 
   const deleteGoal = (id: string) => {
-    setGoals(goals.filter(g => g.id !== id));
+    onUpdate(goals.filter(g => g.id !== id));
   };
 
   return (

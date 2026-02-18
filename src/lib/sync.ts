@@ -28,11 +28,15 @@ export const saveUserDataToFirestore = async (uid: string, data: any) => {
       calories: cleanData.calories || 0,
       weight: cleanData.weight || 0,
       targetWeight: cleanData.targetWeight || 75,
+      height: cleanData.height || 0,
+      age: cleanData.age || 0,
+      gender: cleanData.gender || '',
       sleepHours: cleanData.sleepHours || 0,
       sleepQuality: cleanData.sleepQuality || 0,
       focusSessions: cleanData.focusSessions || 0,
       streak: cleanData.streak || 0,
       lastActive: cleanData.lastActive || new Date().toISOString(),
+      isPro: cleanData.isPro ?? true,
       score: cleanData.score || 0,
       level: cleanData.level || 1,
       xp: cleanData.xp || 0,
@@ -40,7 +44,9 @@ export const saveUserDataToFirestore = async (uid: string, data: any) => {
       theme: cleanData.theme || 'dark',
       accentColor: cleanData.accentColor || '#10b981',
       dailyHistory: cleanData.dailyHistory || {},
+      visionBoard: cleanData.visionBoard || [],
       notificationSettings: cleanData.notificationSettings || {},
+      onboardingCompleted: cleanData.onboardingCompleted ?? false,
       displayName: data.auth?.name || data.displayName || 'Warrior',
       avatar: data.auth?.avatar || data.avatar || '👤',
       uid: uid,
@@ -109,10 +115,8 @@ export const loadUserDataFromFirestore = async (uid: string) => {
     const docSnap = await getDoc(userRef);
 
     if (docSnap.exists()) {
-      // console.log('Firestore: Data retrieved for user', uid);
       return docSnap.data();
     } else {
-      // console.log('Firestore: No remote data found for user', uid);
       return null;
     }
   } catch (error) {
@@ -121,23 +125,23 @@ export const loadUserDataFromFirestore = async (uid: string) => {
   }
 };
 
-// Expanded Mock Bots for a thriving community look
+// Elite Mock Bots with fresh names
 const MOCK_BOTS = [
-  { id: 'bot-1', displayName: 'Marcus_Aurelius', score: 98.5, level: 42, tier: 'Master', avatar: '🏛️', title: 'The Stoic Master', updatedAt: new Date().toISOString() },
-  { id: 'bot-2', displayName: 'Stoic_Warrior', score: 94.2, level: 38, tier: 'Ace', avatar: '🛡️', title: 'The Elite', updatedAt: new Date().toISOString() },
-  { id: 'bot-3', displayName: 'Deep_Focus_99', score: 89.1, level: 31, tier: 'Platinum', avatar: '🧠', title: 'The Elite', updatedAt: new Date().toISOString() },
-  { id: 'bot-4', displayName: 'Vanguard_Elite', score: 85.7, level: 25, tier: 'Platinum', avatar: '⚔️', title: 'The Warrior', updatedAt: new Date().toISOString() },
-  { id: 'bot-5', displayName: 'Zen_Commander', score: 82.3, level: 22, tier: 'Gold', avatar: '🧘', title: 'The Warrior', updatedAt: new Date().toISOString() },
-  { id: 'bot-6', displayName: 'Titan_Discipline', score: 79.8, level: 19, tier: 'Gold', avatar: '🔱', title: 'The Warrior', updatedAt: new Date().toISOString() },
-  { id: 'bot-7', displayName: 'Ares_Protocol', score: 76.4, level: 16, tier: 'Gold', avatar: '🦅', title: 'The Warrior', updatedAt: new Date().toISOString() },
-  { id: 'bot-8', displayName: 'Sensei_Flow', score: 72.1, level: 14, tier: 'Silver', avatar: '🥋', title: 'The Seeker', updatedAt: new Date().toISOString() },
-  { id: 'bot-9', displayName: 'Shadow_Stalker', score: 68.5, level: 12, tier: 'Silver', avatar: '🥷', title: 'The Seeker', updatedAt: new Date().toISOString() },
-  { id: 'bot-10', displayName: 'Iron_Mind', score: 64.2, level: 11, tier: 'Silver', avatar: '⛓️', title: 'The Seeker', updatedAt: new Date().toISOString() },
-  { id: 'bot-11', displayName: 'Atlas_Rising', score: 61.9, level: 10, tier: 'Silver', avatar: '🌎', title: 'The Seeker', updatedAt: new Date().toISOString() },
-  { id: 'bot-12', displayName: 'Nova_Discipline', score: 58.4, level: 9, tier: 'Bronze', avatar: '✨', title: 'The Seeker', updatedAt: new Date().toISOString() },
-  { id: 'bot-13', displayName: 'Ghost_Protocol', score: 54.7, level: 7, tier: 'Bronze', avatar: '👻', title: 'The Drifter', updatedAt: new Date().toISOString() },
-  { id: 'bot-14', displayName: 'Primal_Force', score: 49.2, level: 5, tier: 'Bronze', avatar: '🐺', title: 'The Drifter', updatedAt: new Date().toISOString() },
-  { id: 'bot-15', displayName: 'Static_Void', score: 42.1, level: 3, tier: 'Bronze', avatar: '🌑', title: 'The Drifter', updatedAt: new Date().toISOString() }
+  { id: 'bot-1', displayName: 'Stoic_Actual', score: 98.8, level: 45, tier: 'Master', avatar: '🏛️', title: 'The Stoic Master', updatedAt: new Date().toISOString() },
+  { id: 'bot-2', displayName: 'Vanguard_Commander', score: 94.2, level: 40, tier: 'Master', avatar: '🛡️', title: 'The Elite', updatedAt: new Date().toISOString() },
+  { id: 'bot-3', displayName: 'Apex_Protocol', score: 89.5, level: 35, tier: 'Ace', avatar: '⚡', title: 'The Elite', updatedAt: new Date().toISOString() },
+  { id: 'bot-4', displayName: 'Nova_Prime', score: 86.1, level: 32, tier: 'Ace', avatar: '🧠', title: 'The Elite', updatedAt: new Date().toISOString() },
+  { id: 'bot-5', displayName: 'Zenith_Warrior', score: 82.3, level: 28, tier: 'Platinum', avatar: '⚔️', title: 'The Warrior', updatedAt: new Date().toISOString() },
+  { id: 'bot-6', displayName: 'Titan_Discipline', score: 78.4, level: 25, tier: 'Platinum', avatar: '🔱', title: 'The Warrior', updatedAt: new Date().toISOString() },
+  { id: 'bot-7', displayName: 'Ghost_Operative', score: 75.1, level: 22, tier: 'Gold', avatar: '🥷', title: 'The Warrior', updatedAt: new Date().toISOString() },
+  { id: 'bot-8', displayName: 'Neon_Stoic', score: 71.5, level: 20, tier: 'Gold', avatar: '⚡', title: 'The Warrior', updatedAt: new Date().toISOString() },
+  { id: 'bot-9', displayName: 'Shadow_Commander', score: 68.9, level: 18, tier: 'Gold', avatar: '🦅', title: 'The Seeker', updatedAt: new Date().toISOString() },
+  { id: 'bot-10', displayName: 'Iron_Mindset', score: 64.2, level: 16, tier: 'Silver', avatar: '⛓️', title: 'The Seeker', updatedAt: new Date().toISOString() },
+  { id: 'bot-11', displayName: 'Atlas_One', score: 59.7, level: 14, tier: 'Silver', avatar: '🌎', title: 'The Seeker', updatedAt: new Date().toISOString() },
+  { id: 'bot-12', displayName: 'Kratos_System', score: 54.1, level: 12, tier: 'Silver', avatar: '🏛️', title: 'The Seeker', updatedAt: new Date().toISOString() },
+  { id: 'bot-13', displayName: 'Primal_Echo', score: 48.6, level: 10, tier: 'Bronze', avatar: '🐺', title: 'The Drifter', updatedAt: new Date().toISOString() },
+  { id: 'bot-14', displayName: 'Static_Aura', score: 42.3, level: 8, tier: 'Bronze', avatar: '✨', title: 'The Drifter', updatedAt: new Date().toISOString() },
+  { id: 'bot-15', displayName: 'Void_Seeker', score: 35.5, level: 5, tier: 'Bronze', avatar: '🌑', title: 'The Drifter', updatedAt: new Date().toISOString() }
 ];
 
 // Mock Feed actions for bots
@@ -153,44 +157,43 @@ const BOT_ACTIONS = [
 ];
 
 /**
- * Real-time Leaderboard Logic
- * Combined Real Users with Mock Bots
+ * Unified Global Ranking System
+ * Listens to the 'users' collection where real users reside.
+ * Merges with elite bots and sorts by score to ensure competitive hierarchy.
  */
 export const syncLeaderboard = (callback: (data: any[]) => void) => {
   try {
     const usersRef = collection(db, 'users');
-    const q = query(usersRef, orderBy('score', 'desc'), limit(15));
-
+    const q = query(usersRef, orderBy('score', 'desc'), limit(50));
+    
     return onSnapshot(q, (snapshot) => {
-      const realUsers = snapshot.docs.map(doc => ({ 
-        id: doc.id, 
+      // 1. Get real users from Firestore
+      const realUsers = snapshot.docs.map(doc => ({
+        id: doc.id,
         uid: doc.id,
-        ...doc.data() 
-      })) as any[];
+        ...(doc.data() as any)
+      }));
       
-      // Merge real users with bots
-      // If a real user has the same score as a bot, real user stays
-      const combined = [...realUsers];
+      // 2. Filter MOCK_BOTS to remove any that might conflict with real user names
+      const realNames = new Set(realUsers.map(u => u.displayName));
+      const filteredBots = MOCK_BOTS.filter(bot => !realNames.has(bot.displayName));
       
-      // Add bots that aren't already represented by real users
-      MOCK_BOTS.forEach(bot => {
-        if (!combined.some(u => u.displayName === bot.displayName)) {
-          combined.push(bot);
-        }
-      });
-
-      const finalLeaderboard = combined
+      // 3. Merge real users and bots, then sort by score descending
+      const combined = [...realUsers, ...filteredBots]
         .sort((a, b) => (b.score || 0) - (a.score || 0))
-        .slice(0, 15);
-
-      callback(finalLeaderboard);
+        .slice(0, 50); // Keep top 50 in global hierarchy
+        
+      callback(combined);
     }, (error: any) => {
-      console.error("Firebase Sync Error (Leaderboard):", error.message);
-      // If Firestore is empty or fails, still return bots
+      if (error.code === 'failed-precondition') {
+        console.error("Firestore Index Required: https://console.firebase.google.com/project/discipline-tracker-ee454/firestore/indexes");
+      } else {
+        console.error("Global Ranking Sync Error:", error.message);
+      }
       callback(MOCK_BOTS);
     });
   } catch (error) {
-    console.error("Failed to initialize Leaderboard Sync:", error);
+    console.error("Failed to initialize Global Ranking Sync:", error);
     callback(MOCK_BOTS);
   }
 };
@@ -208,8 +211,8 @@ export const syncUserFeed = (callback: (data: any[]) => void) => {
       const realUsers = snapshot.docs.map(doc => ({ 
         id: doc.id, 
         uid: doc.id,
-        ...doc.data() 
-      })) as any[];
+        ...(doc.data() as any)
+      }));
 
       // Generate some recent bot actions to fill the feed
       const botFeedItems = MOCK_BOTS.slice(0, 8).map((bot, i) => ({
