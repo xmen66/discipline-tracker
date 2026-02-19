@@ -109,7 +109,7 @@ export const Auth: React.FC<Props> = ({ onAuth }) => {
           <div className="w-16 h-16 bg-[#10b981] rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(16,185,129,0.3)]">
             <Zap className="w-8 h-8 text-black" fill="currentColor" />
           </div>
-          <h1 className="text-5xl font-black italic tracking-tighter mb-2 uppercase">SMASH FIND</h1>
+          <h1 className="text-5xl font-black italic tracking-tighter mb-2 uppercase">SMASH</h1>
           <p className="text-[#10b981] font-bold uppercase text-[10px] tracking-[0.4em]">Protocol Elite System</p>
         </div>
 

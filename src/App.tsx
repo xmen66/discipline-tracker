@@ -355,7 +355,7 @@ export function App() {
           </div>
           
           <div className="text-center space-y-4">
-            <h1 className="text-4xl font-black italic tracking-tighter uppercase">SMASH FIND</h1>
+            <h1 className="text-4xl font-black italic tracking-tighter uppercase">SMASH</h1>
             <div className="flex flex-col items-center gap-2">
               <div className="w-48 h-1 bg-neutral-900 rounded-full overflow-hidden">
                 <motion.div 

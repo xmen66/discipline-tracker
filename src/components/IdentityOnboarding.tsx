@@ -35,7 +35,7 @@ export const IdentityOnboarding: React.FC<Props> = ({ onComplete, initialDiscipl
               <Zap className="w-6 h-6 text-black" fill="currentColor" />
             </div>
             <div>
-              <h1 className="font-black tracking-tighter text-2xl leading-none italic">SMASH FIND</h1>
+              <h1 className="font-black tracking-tighter text-2xl leading-none italic">SMASH</h1>
               <p className="text-[10px] text-[#10b981] font-bold tracking-[0.3em] mt-1 uppercase">Protocol Elite</p>
             </div>
           </div>

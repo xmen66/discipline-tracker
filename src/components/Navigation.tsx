@@ -24,7 +24,7 @@ const Logo = ({ theme }: { theme?: string }) => (
       <h1 className={cn(
         "font-black tracking-tighter text-2xl leading-none italic",
         theme === 'light' ? "text-slate-900" : "text-white"
-      )}>SMASH FIND</h1>
+      )}>SMASH</h1>
       <p className="text-[10px] text-[#10b981] font-bold tracking-[0.3em] mt-1 uppercase">Protocol Elite</p>
     </div>
   </div>
@@ -168,7 +168,7 @@ export const Sidebar: React.FC<Props> = ({ activeView, onViewChange, onDownloadC
             className="w-full flex items-center gap-4 px-4 py-4 rounded-2xl transition-all font-bold text-sm text-[var(--accent-color)] bg-[var(--accent-color)]/5 hover:bg-[var(--accent-color)]/10 border border-[var(--accent-color)]/10"
           >
             <Download className="w-5 h-5" />
-            Get SMASH FIND App
+            Get Smash App
           </button>
         </div>
       </nav>
