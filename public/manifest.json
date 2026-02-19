@@ -1,23 +1,24 @@
 {
+  "name": "Discipline Tracker",
+  "short_name": "SMASH",
+  "description": "Discipline Tracker helps users build consistency, track progress, and improve daily discipline.",
   "id": "/",
-  "name": "Smash",
-  "short_name": "Smash",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#050505",
   "theme_color": "#050505",
   "icons": [
     {
-      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KICA8cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjEyMCIgZmlsbD0iIzA1MDUwNSIvPgogIDxwYXRoIGQ9Ik0yODggMzJMMTI4IDI4OGg5NmwtMzIgMTkyTDM4NCAyMjRoLTk2bDY0LTE5MnoiIGZpbGw9IiMxMGI5ODEiIGZpbHRlcj0iZHJvcC1zaGFkb3coMCAwIDEwcHggIzEwYjk4MSkiLz4KPC9zdmc+",
-      "sizes": "512x512",
-      "type": "image/svg+xml",
-      "purpose": "any"
-    },
-    {
-      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KICA8cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjEyMCIgZmlsbD0iIzA1MDUwNSIvPgogIDxwYXRoIGQ9Ik0yODggMzJMMTI4IDI4OGg5NmwtMzIgMTkyTDM4NCAyMjRoLTk2bDY0LTE5MnoiIGZpbGw9IiMxMGI5ODEiIGZpbHRlcj0iZHJvcC1zaGFkb3coMCAwIDEwcHggIzEwYjk4MSkiLz4KPC9zdmc+",
+      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KICA8ZyBmaWx0ZXI9InVybCgjZ2xvdykiPgogICAgPHJlY3Qgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHJ4PSIxNDAiIGZpbGw9IiMxMGI5ODEiLz4KICAgIDxyZWN0IHdpZHRoPSI0ODAiIGhlaWdodD0iNDgwIiB4PSIxNiIgeT0iMTYiIHJ4PSIxMzAiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS1vcGFjaXR5PSIwLjMiIHN0cm9rZS13aWR0aD0iMiIvPgogIDwvZz4KICA8cGF0aCBkPSJNMzA0IDk2TDE3MiAzMTJoNzJsLTI4IDEwNEwzNDAgMjY0aC03Mmw0OC0xNjh6IiBmaWxsPSIjMDUwNTA1Ii8+CiAgPGRlZnM+CiAgICA8ZmlsdGVyIGlkPSJnbG93IiB4PSItMjAlIiB5PSItMjAlIiB3aWR0aD0iMTQwJSIgaGVpZ2h0PSIxNDAlIj4KICAgICAgPGZlR2F1c3NpYW5CbHVyIHN0ZERldmlhdGlvbj0iMTAiIHJlc3VsdD0iYmx1ciIvPgogICAgICA8ZmVDb21wb3NpdGUgaW49IlNvdXJjZUdyYXBoaWMiIGluMj0iYmx1ciIgb3BlcmF0b3I9Im92ZXIiLz4KICAgIDwvZmlsdGVyPgogIDwvZGVmcz4KPC9zdmc+",
       "sizes": "192x192",
       "type": "image/svg+xml",
-      "purpose": "any"
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KICA8ZyBmaWx0ZXI9InVybCgjZ2xvdykiPgogICAgPHJlY3Qgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHJ4PSIxNDAiIGZpbGw9IiMxMGI5ODEiLz4KICAgIDxyZWN0IHdpZHRoPSI0ODAiIGhlaWdodD0iNDgwIiB4PSIxNiIgeT0iMTYiIHJ4PSIxMzAiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS1vcGFjaXR5PSIwLjMiIHN0cm9rZS13aWR0aD0iMiIvPgogIDwvZz4KICA8cGF0aCBkPSJNMzA0IDk2TDE3MiAzMTJoNzJsLTI4IDEwNEwzNDAgMjY0aC03Mmw0OC0xNjh6IiBmaWxsPSIjMDUwNTA1Ii8+CiAgPGRlZnM+CiAgICA8ZmlsdGVyIGlkPSJnbG93IiB4PSItMjAlIiB5PSItMjAlIiB3aWR0aD0iMTQwJSIgaGVpZ2h0PSIxNDAlIj4KICAgICAgPGZlR2F1c3NpYW5CbHVyIHN0ZERldmlhdGlvbj0iMTAiIHJlc3VsdD0iYmx1ciIvPgogICAgICA8ZmVDb21wb3NpdGUgaW49IlNvdXJjZUdyYXBoaWMiIGluMj0iYmx1ciIgb3BlcmF0b3I9Im92ZXIiLz4KICAgIDwvZmlsdGVyPgogIDwvZGVmcz4KPC9zdmc+",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
     }
   ]
 }
