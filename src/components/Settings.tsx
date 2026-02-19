@@ -69,7 +69,7 @@ export const Settings: React.FC<Props> = ({ state, onLogout, onDeleteData, onSta
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state));
     const downloadAnchorNode = document.createElement('a');
     downloadAnchorNode.setAttribute("href", dataStr);
-    downloadAnchorNode.setAttribute("download", `smash_backup_${new Date().toISOString().split('T')[0]}.json`);
+    downloadAnchorNode.setAttribute("download", `smashfind_backup_${new Date().toISOString().split('T')[0]}.json`);
     document.body.appendChild(downloadAnchorNode);
     downloadAnchorNode.click();
     downloadAnchorNode.remove();
@@ -96,7 +96,7 @@ export const Settings: React.FC<Props> = ({ state, onLogout, onDeleteData, onSta
     <div className="space-y-8 pb-24 md:pb-8">
       <div>
         <h2 className="text-4xl font-black italic tracking-tighter uppercase italic">Configuration</h2>
-        <p className="text-[#10b981] font-bold uppercase text-xs tracking-[0.3em] mt-2">SMASH PROTOCOL CONTROL</p>
+        <p className="text-[#10b981] font-bold uppercase text-xs tracking-[0.3em] mt-2">SMASH FIND PROTOCOL CONTROL</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

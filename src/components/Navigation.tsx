@@ -1,10 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { LayoutDashboard, BarChart2, BookText, Trophy, Settings, Target, Download, Activity } from 'lucide-react';
+import { LayoutDashboard, BarChart2, BookText, Trophy, Settings, Target, Zap, Download, Activity } from 'lucide-react';
 import { cn } from '../utils/cn';
 import { Theme } from '../types';
 import { useActiveProtocols } from '../hooks/useActiveProtocols';
-import { BrandLogo } from './BrandLogo';
 
 export type View = 'dashboard' | 'analytics' | 'vision' | 'journal' | 'leaderboard' | 'settings';
 
@@ -18,12 +17,14 @@ interface Props {
 
 const Logo = ({ theme }: { theme?: string }) => (
   <div className="flex items-center gap-3">
-    <BrandLogo className="w-10 h-10" />
+    <div className="w-10 h-10 bg-[#10b981] rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.3)]">
+      <Zap className="w-6 h-6 text-black" fill="currentColor" />
+    </div>
     <div>
       <h1 className={cn(
         "font-black tracking-tighter text-2xl leading-none italic",
         theme === 'light' ? "text-slate-900" : "text-white"
-      )}>SMASH</h1>
+      )}>SMASH FIND</h1>
       <p className="text-[10px] text-[#10b981] font-bold tracking-[0.3em] mt-1 uppercase">Protocol Elite</p>
     </div>
   </div>
@@ -167,7 +168,7 @@ export const Sidebar: React.FC<Props> = ({ activeView, onViewChange, onDownloadC
             className="w-full flex items-center gap-4 px-4 py-4 rounded-2xl transition-all font-bold text-sm text-[var(--accent-color)] bg-[var(--accent-color)]/5 hover:bg-[var(--accent-color)]/10 border border-[var(--accent-color)]/10"
           >
             <Download className="w-5 h-5" />
-            Get Smash App
+            Get SMASH FIND App
           </button>
         </div>
       </nav>

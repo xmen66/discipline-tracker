@@ -297,7 +297,7 @@ export const Dashboard: React.FC<Props> = ({ state, onStateUpdate, onSealPromise
                   <Smartphone className="w-5 h-5 text-black" />
                 </div>
                 <div>
-                  <h4 className="text-black font-black italic tracking-tighter text-sm">INSTALL SMASH</h4>
+                  <h4 className="text-black font-black italic tracking-tighter text-sm">INSTALL SMASH FIND</h4>
                   <p className="text-black/60 text-[10px] font-bold uppercase tracking-widest">Elite Native Experience</p>
                 </div>
               </div>
@@ -306,7 +306,7 @@ export const Dashboard: React.FC<Props> = ({ state, onStateUpdate, onSealPromise
                   onClick={() => setIsDownloadModalOpen(true)}
                   className="bg-black text-white px-6 py-2 rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-neutral-800 transition-colors"
                 >
-                  Get Smash
+                  Get SMASH FIND
                 </button>
                 <button 
                   onClick={() => setShowDownloadBanner(false)}

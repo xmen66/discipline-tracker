@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, Lock, User, ArrowRight, ShieldCheck, AlertCircle } from 'lucide-react';
+import { Mail, Lock, User, ArrowRight, ShieldCheck, Zap, AlertCircle } from 'lucide-react';
 import { AuthData } from '../types';
 import { logIn, signUp, signInWithGoogle } from '../lib/auth';
-import { BrandLogo } from './BrandLogo';
 
 interface Props {
   onAuth: (data: AuthData) => void;
@@ -107,8 +106,10 @@ export const Auth: React.FC<Props> = ({ onAuth }) => {
         className="max-w-md w-full relative z-10"
       >
         <div className="text-center mb-10">
-          <BrandLogo className="w-16 h-16 mx-auto mb-6" />
-          <h1 className="text-5xl font-black italic tracking-tighter mb-2 uppercase">SMASH</h1>
+          <div className="w-16 h-16 bg-[#10b981] rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(16,185,129,0.3)]">
+            <Zap className="w-8 h-8 text-black" fill="currentColor" />
+          </div>
+          <h1 className="text-5xl font-black italic tracking-tighter mb-2 uppercase">SMASH FIND</h1>
           <p className="text-[#10b981] font-bold uppercase text-[10px] tracking-[0.4em]">Protocol Elite System</p>
         </div>
 

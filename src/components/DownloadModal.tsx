@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Apple, Smartphone, X, Download, Share, PlusSquare, Loader2 } from 'lucide-react';
-import { BrandLogo } from './BrandLogo';
+import { Apple, Smartphone, X, Download, Share, PlusSquare, Zap, Loader2 } from 'lucide-react';
 
 interface Props {
   isOpen: boolean;
@@ -13,17 +12,17 @@ export const DownloadModal: React.FC<Props> = ({ isOpen, onClose }) => {
     setDownloading(true);
     // Simulate build processing time
     setTimeout(() => {
-      const dummyContent = "SMASH ANDROID APK ALPHA VERSION";
+      const dummyContent = "SMASH FIND ANDROID APK ALPHA VERSION";
       const blob = new Blob([dummyContent], { type: 'application/vnd.android.package-archive' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = "Smash_v1.0.4.apk";
+      a.download = "SmashFind_v1.0.4.apk";
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       setDownloading(false);
-      alert("SMASH APK Build Complete. Installation package downloaded.");
+      alert("SMASH FIND APK Build Complete. Installation package downloaded.");
     }, 2000);
   };
 
@@ -54,8 +53,10 @@ export const DownloadModal: React.FC<Props> = ({ isOpen, onClose }) => {
             </button>
 
             <div className="text-center mb-10">
-              <BrandLogo className="w-16 h-16 mx-auto mb-4" />
-              <h2 className="text-3xl font-black italic tracking-tighter mb-2 uppercase">SMASH MOBILE</h2>
+              <div className="w-16 h-16 bg-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-[0_0_30px_rgba(16,185,129,0.4)]">
+                <Zap className="w-8 h-8 text-black" fill="currentColor" />
+              </div>
+              <h2 className="text-3xl font-black italic tracking-tighter mb-2 uppercase">SMASH FIND MOBILE</h2>
               <p className="text-neutral-500 font-bold uppercase text-[10px] tracking-widest">Deploy Protocol to Device</p>
             </div>
 
@@ -127,7 +128,7 @@ export const DownloadModal: React.FC<Props> = ({ isOpen, onClose }) => {
 
             <div className="mt-8 p-4 bg-emerald-500/5 border border-emerald-500/10 rounded-2xl text-center">
               <p className="text-[10px] text-neutral-500 font-bold uppercase tracking-widest leading-relaxed">
-                SMASH Mobile Protocol: V1.0.4-Alpha
+                SMASH FIND Mobile Protocol: V1.0.4-Alpha
               </p>
             </div>
           </motion.div>
