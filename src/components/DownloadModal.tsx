@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Apple, Smartphone, X, Download, Share, PlusSquare, Zap, Loader2 } from 'lucide-react';
+import { Apple, Smartphone, X, Download, Share, PlusSquare, Loader2 } from 'lucide-react';
+import { BrandLogo } from './BrandLogo';
 
 interface Props {
   isOpen: boolean;
@@ -53,9 +54,7 @@ export const DownloadModal: React.FC<Props> = ({ isOpen, onClose }) => {
             </button>
 
             <div className="text-center mb-10">
-              <div className="w-16 h-16 bg-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-[0_0_30px_rgba(16,185,129,0.4)]">
-                <Zap className="w-8 h-8 text-black" fill="currentColor" />
-              </div>
+              <BrandLogo className="w-16 h-16 mx-auto mb-4" />
               <h2 className="text-3xl font-black italic tracking-tighter mb-2 uppercase">SMASH MOBILE</h2>
               <p className="text-neutral-500 font-bold uppercase text-[10px] tracking-widest">Deploy Protocol to Device</p>
             </div>

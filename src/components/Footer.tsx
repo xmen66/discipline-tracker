@@ -1,4 +1,5 @@
-import { Github, Twitter, Linkedin, Facebook, Zap } from 'lucide-react';
+import { Github, Twitter, Linkedin, Facebook } from 'lucide-react';
+import { BrandLogo } from './BrandLogo';
 
 export const Footer = () => {
   return (
@@ -7,9 +8,7 @@ export const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
           <div className="space-y-6">
             <div className="flex items-center gap-2">
-              <div className="p-1.5 bg-[#10b981] rounded-lg">
-                <Zap className="w-5 h-5 text-black" fill="currentColor" />
-              </div>
+              <BrandLogo className="w-8 h-8 rounded-lg" />
               <span className="font-black text-xl tracking-tighter text-white italic">SMASH FIND</span>
             </div>
             <p className="max-w-xs leading-relaxed text-sm">

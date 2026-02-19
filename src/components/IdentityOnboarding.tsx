@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, ArrowRight, Zap, Target, Plus, X } from 'lucide-react';
+import { Check, ArrowRight, Target, Plus, X } from 'lucide-react';
 import { cn } from '../utils/cn';
+import { BrandLogo } from './BrandLogo';
 
 interface Props {
   onComplete: (selectedNames: string[]) => void;
@@ -31,9 +32,7 @@ export const IdentityOnboarding: React.FC<Props> = ({ onComplete, initialDiscipl
         
         <div className="flex justify-between items-center mb-12">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-[#10b981] rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.3)]">
-              <Zap className="w-6 h-6 text-black" fill="currentColor" />
-            </div>
+            <BrandLogo className="w-10 h-10" />
             <div>
               <h1 className="font-black tracking-tighter text-2xl leading-none italic">SMASH</h1>
               <p className="text-[10px] text-[#10b981] font-bold tracking-[0.3em] mt-1 uppercase">Protocol Elite</p>

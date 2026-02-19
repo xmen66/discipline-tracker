@@ -8,15 +8,15 @@
   "theme_color": "#050505",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/3050/3050525.png",
+      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KICA8cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjEyMCIgZmlsbD0iIzA1MDUwNSIvPgogIDxwYXRoIGQ9Ik0yODggMzJMMTI4IDI4OGg5NmwtMzIgMTkyTDM4NCAyMjRoLTk2bDY0LTE5MnoiIGZpbGw9IiMxMGI5ODEiIGZpbHRlcj0iZHJvcC1zaGFkb3coMCAwIDEwcHggIzEwYjk4MSkiLz4KPC9zdmc+",
       "sizes": "512x512",
-      "type": "image/png",
+      "type": "image/svg+xml",
       "purpose": "any"
     },
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/3050/3050525.png",
+      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KICA8cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjEyMCIgZmlsbD0iIzA1MDUwNSIvPgogIDxwYXRoIGQ9Ik0yODggMzJMMTI4IDI4OGg5NmwtMzIgMTkyTDM4NCAyMjRoLTk2bDY0LTE5MnoiIGZpbGw9IiMxMGI5ODEiIGZpbHRlcj0iZHJvcC1zaGFkb3coMCAwIDEwcHggIzEwYjk4MSkiLz4KPC9zdmc+",
       "sizes": "192x192",
-      "type": "image/png",
+      "type": "image/svg+xml",
       "purpose": "any"
     }
   ]

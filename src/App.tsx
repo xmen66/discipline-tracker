@@ -8,11 +8,11 @@ import { Settings } from './components/Settings';
 import { Sidebar, BottomNav, View } from './components/Navigation';
 import { DownloadModal } from './components/DownloadModal';
 import { Auth } from './components/Auth';
+import { BrandLogo } from './components/BrandLogo';
 import { UserState, Habit, DailyHistoryEntry, NotificationSettings, Goal } from './types';
 import { DisciplineEngine } from './utils/DisciplineEngine';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from './utils/cn';
-import { Zap } from 'lucide-react';
 import { subscribeToAuthChanges, logOut, handleSignInRedirect } from './lib/auth';
 import { saveUserDataToFirestore, loadUserDataFromFirestore, broadcastProtocolEvent } from './lib/sync';
 
@@ -350,9 +350,7 @@ export function App() {
           animate={{ opacity: 1, scale: 1 }}
           className="relative z-10 flex flex-col items-center"
         >
-          <div className="w-20 h-20 bg-[#10b981] rounded-[2rem] flex items-center justify-center mb-8 shadow-[0_0_50px_rgba(16,185,129,0.3)] animate-bounce">
-            <Zap className="w-10 h-10 text-black" fill="currentColor" />
-          </div>
+          <BrandLogo className="w-20 h-20 rounded-[2rem] mb-8 animate-bounce" />
           
           <div className="text-center space-y-4">
             <h1 className="text-4xl font-black italic tracking-tighter uppercase">SMASH</h1>

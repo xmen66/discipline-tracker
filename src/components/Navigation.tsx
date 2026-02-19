@@ -1,9 +1,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { LayoutDashboard, BarChart2, BookText, Trophy, Settings, Target, Zap, Download, Activity } from 'lucide-react';
+import { LayoutDashboard, BarChart2, BookText, Trophy, Settings, Target, Download, Activity } from 'lucide-react';
 import { cn } from '../utils/cn';
 import { Theme } from '../types';
 import { useActiveProtocols } from '../hooks/useActiveProtocols';
+import { BrandLogo } from './BrandLogo';
 
 export type View = 'dashboard' | 'analytics' | 'vision' | 'journal' | 'leaderboard' | 'settings';
 
@@ -17,9 +18,7 @@ interface Props {
 
 const Logo = ({ theme }: { theme?: string }) => (
   <div className="flex items-center gap-3">
-    <div className="w-10 h-10 bg-[#10b981] rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.3)]">
-      <Zap className="w-6 h-6 text-black" fill="currentColor" />
-    </div>
+    <BrandLogo className="w-10 h-10" />
     <div>
       <h1 className={cn(
         "font-black tracking-tighter text-2xl leading-none italic",
